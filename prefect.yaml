@@ -14,8 +14,7 @@ push:
 
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
-- prefect.deployments.steps.git_clone:
-  repository: https://github.com/marlonmoreira1/film_ratings.git
+
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
@@ -30,6 +29,8 @@ deployments:
     name: ETL_POOL_SERVERLESS
     work_queue_name:
     job_variables: {}
+  storage:
+  - block: github-repository/prefect-repo
   schedules:
   - cron: 30 0 * * *
     timezone: America/Sao_Paulo

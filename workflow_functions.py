@@ -15,13 +15,12 @@ import json
 import pyodbc
 from prefect import flow, task
 import os
-from dotenv import load_dotenv
 from prefect.blocks.system import Secret
 from prefect_github.repository import GitHubRepository
 import warnings
 warnings.simplefilter(action='ignore')
 
-load_dotenv()
+github_repository_block = GitHubRepository.load("prefect-repo")
 
 pt = "pt-BR"
 en = "en-US"
@@ -239,13 +238,18 @@ def main_flow():
     movies_flow()
     series_flow()
 
+
+github_repository_block = GitHubRepository.load("prefect-repo")
+
 if __name__ == "__main__":
-    github_repository_block = GitHubRepository.load("prefect-repo")
-    main_flow.from_source(
-        source=github_repository_block,
-        entrypoint="workflow_functions.py:main_flow"
-    ).deploy(
+    
+    deployment = Deployment.build_from_flow(
+        flow=main_flow,  
         name="film_ratings",
-        work_pool_name="ETL_POOL_SERVERLESS"
-    )    
+        work_pool_name="ETL_POOL_SERVERLESS",
+        storage=github_repository_block,  
+        entrypoint="workflow_functions.py:main_flow"  
+    )
+
+    deployment.apply()   
     
