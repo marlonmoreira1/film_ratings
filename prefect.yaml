@@ -14,8 +14,8 @@ push:
 
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
-- prefect.deployments.steps.set_working_directory:
-    directory: C:\filmes_ratings
+- prefect.deployments.steps.git_clone:
+  repository: https://github.com/marlonmoreira1/film_ratings.git
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
