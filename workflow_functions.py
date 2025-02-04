@@ -22,13 +22,6 @@ warnings.simplefilter(action='ignore')
 pt = "pt-BR"
 en = "en-US"
 
-Secret(value="minha_api_key").save("api-key", overwrite=True)
-Secret(value="meu_client_id").save("client-id", overwrite=True)
-Secret(value="meu_server").save("server", overwrite=True)
-Secret(value="meu_database").save("database", overwrite=True)
-Secret(value="meu_uid").save("uid", overwrite=True)
-Secret(value="meu_pwd").save("pwd", overwrite=True)
-
 API_KEY = Secret.load("api-key").get()
 CLIENT_ID = Secret.load("client-id").get()
 SERVER = Secret.load("server").get()
