@@ -17,6 +17,7 @@ from prefect import flow, task
 import os
 from dotenv import load_dotenv
 from prefect.blocks.system import Secret
+from prefect_github.repository import GitHubRepository
 import warnings
 warnings.simplefilter(action='ignore')
 
@@ -239,5 +240,12 @@ def main_flow():
     series_flow()
 
 if __name__ == "__main__":
-    main_flow()    
+    github_repository_block = GitHubRepository.load("prefect-repo")
+    main_flow.from_source(
+        source=github_repository_block,
+        entrypoint="workflow_functions.py:main_flow"
+    ).deploy(
+        name="film_ratings",
+        work_pool_name="ETL_POOL_SERVERLESS"
+    )    
     

@@ -3,6 +3,8 @@ beautifulsoup4
 pandas
 numpy
 datetime
+prefect
+prefect-github
 selenium
 chromedriver_autoinstaller
 webdriver_manager 
