@@ -1,0 +1,11 @@
+requests
+beautifulsoup4
+pandas
+numpy
+datetime
+selenium
+chromedriver_autoinstaller
+webdriver_manager 
+pyodbc
+unidecode
+sqlalchemy
