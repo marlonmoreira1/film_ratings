@@ -1,4 +1,4 @@
-from data_extraction import scrape_imdb_titles_selenium, extract_movies_data, extrair_filmes_e_notas, extrair_dados_adorocinema, extrair_filmes_letterboxd, extrair_dados_trakt, discover_movies, now_playing_movies, fetch_movie_details_by_name,load_data 
+from data_extraction import fetch_imdb_rating, extract_movies_data, extrair_filmes_e_notas, extrair_dados_adorocinema, extrair_filmes_letterboxd, extrair_dados_trakt, discover_movies, now_playing_movies, fetch_movie_details_by_name,load_data 
 from processor import get_imdb_name, concat_rt, concat_filmow, join_omdbdfs, merge_dfs, printar_filmes, filter_processing_final_df, merge_new_movies, print_film, join_omdbdfs_series,weekly_filter,replace_rt
 import pandas as pd
 import re
@@ -23,6 +23,7 @@ pt = "pt-BR"
 en = "en-US"
 
 API_KEY = Secret.load("api-key").get()
+API = Secret.load("api").get()
 CLIENT_ID = Secret.load("client-id").get()
 SERVER = Secret.load("server").get()
 DATABASE = Secret.load("database").get()
@@ -36,9 +37,6 @@ data_hoje = data.strftime('%Y-%m-%d')
 data_inicio = datetime.today() - timedelta(days=17)
 data_ontem = data_inicio.strftime('%Y-%m-%d')
 
-@task
-def get_columns(df):
-    print(df)
 
 @flow(name="WorkFlow dos Filmes.")
 def movies_flow():
@@ -59,13 +57,7 @@ def movies_flow():
     columns_to_divide = ['nota_rottentomatoes']
 
     columns_to_score = ['nota_omdb', 'nota_imdb_en0', 'nota_imdb_en0','nota_filmow',
-        'nota_adorocinema', 'nota_rottentomatoes', 'nota_letterbox', 'nota_trakt']
-    
-
-    url_imdb = f"https://www.imdb.com/search/title/?title_type=feature&release_date={data_ontem},{data_hoje}&num_votes=1,&adult=include&sort=user_rating,desc"
-    df_imdb = scrape_imdb_titles_selenium.submit(url_imdb)
-
-    df_imdb2 = get_imdb_name(df_imdb.result())
+        'nota_adorocinema', 'nota_rottentomatoes', 'nota_letterbox', 'nota_trakt']    
     
 
     url_rt = "https://www.rottentomatoes.com/browse/movies_at_home/sort:newest?page=4"
@@ -95,20 +87,22 @@ def movies_flow():
     pt_movies_cinema = now_playing_movies.submit(pt,API_KEY,base_url,end_point_streaming,'title','original_title')
     en_movies_cinema = now_playing_movies.submit(en,API_KEY,base_url,end_point_streaming,'title','original_title')    
 
-    omdb_df = join_omdbdfs.submit(
+    omdb_df = join_omdbdfs(
         pt_movies.result(),
         en_movies.result(),
         pt_movies_cinema.result(),
         en_movies_cinema.result()
         )
 
+    df_imdb = fetch_imdb_rating(omdb_df['movie_original'],API)
+
     url_base = "https://api.trakt.tv/movies/"
-    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df.result(),CLIENT_ID)
+    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df,CLIENT_ID)
 
-    pt_dfs = [df_imdb2,df_filmow_final.result(),df_adorocinema.result()]
-    en_dfs = [df_imdb2,df_rt_final.result(),letterbox_df.result(),trakt_df.result()]
+    pt_dfs = [df_imdb,df_filmow_final.result(),df_adorocinema.result()]
+    en_dfs = [df_imdb,df_rt_final.result(),letterbox_df.result(),trakt_df.result()]
 
-    df_final = merge_dfs(omdb_df.result(),pt_dfs,en_dfs)
+    df_final = merge_dfs(omdb_df,pt_dfs,en_dfs)
 
     df_final = weekly_filter(df_final)
 
@@ -159,12 +153,7 @@ def series_flow():
     data = datetime.today() - timedelta(days=1)
     data_hoje = data.strftime('%Y-%m-%d')
     data_inicio = datetime.today() - timedelta(days=17)
-    data_ontem = data_inicio.strftime('%Y-%m-%d')
-
-    url_imdb = f"https://www.imdb.com/search/title/?title_type=tv_series&num_votes=1,&adult=include"
-    df_imdb = scrape_imdb_titles_selenium.submit(url_imdb)
-
-    df_imdb2 = get_imdb_name(df_imdb.result())    
+    data_ontem = data_inicio.strftime('%Y-%m-%d')      
 
 
     url_rt = "https://www.rottentomatoes.com/browse/tv_series_browse/sort:newest?page=10"    
@@ -178,26 +167,25 @@ def series_flow():
     
 
     url_adorocinema = "https://www.adorocinema.com/series-tv/"
-    df_adorocinema = extrair_dados_adorocinema.submit(url_adorocinema, num_paginas=16)      
-
-    
+    df_adorocinema = extrair_dados_adorocinema.submit(url_adorocinema, num_paginas=16)    
 
     pt_movies_cinema = now_playing_movies.submit(pt,API_KEY,base_url,end_point_streaming,'name','original_name')
     en_movies_cinema = now_playing_movies.submit(en,API_KEY,base_url,end_point_streaming,'name','original_name')    
 
-    omdb_df = join_omdbdfs_series.submit(        
+    omdb_df = join_omdbdfs_series(        
         pt_movies_cinema.result(),
         en_movies_cinema.result()
-        )   
+        )
     
+    df_imdb = fetch_imdb_rating(omdb_df['movie_original'],API)   
 
     url_base = "https://api.trakt.tv/shows/"
-    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df.result(),CLIENT_ID)
+    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df,CLIENT_ID)
 
-    pt_dfs = [df_imdb2,df_filmow.result(),df_adorocinema.result()]
-    en_dfs = [df_imdb2,df_rt_clean,trakt_df.result()]
+    pt_dfs = [df_imdb,df_filmow.result(),df_adorocinema.result()]
+    en_dfs = [df_imdb,df_rt_clean,trakt_df.result()]
 
-    df_final = merge_dfs(omdb_df.result(),pt_dfs,en_dfs)    
+    df_final = merge_dfs(omdb_df,pt_dfs,en_dfs)    
     
 
     filmes = filter_processing_final_df(df_final,

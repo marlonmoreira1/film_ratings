@@ -28,98 +28,24 @@ import warnings
 warnings.simplefilter(action='ignore')
 
 
-
-
-def get_driver():    
-    
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_argument("--disable-gpu")    
-    options.add_argument(
-        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    )
-    
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)    
-    return driver
-
 @task
-def scrape_imdb_titles_selenium(url):
-    """
-    Scrape all movie titles, ratings, and vote counts from IMDb using Selenium to handle dynamic content.
-    """
+def fetch_imdb_rating(movies, omdb_api_key):    
     
-    driver = get_driver()
+    data = []
 
-    titles = []
-    ratings = []
-    votes = []
-
-    try:
-        # Carregar a página
-        driver.get(url)
+    for movie in movies:
+        url = f"http://www.omdbapi.com/?apikey={omdb_api_key}&t={movie}"
+        response = requests.get(url)
         
-         # Lista para armazenar os votos
-        contador = 0
-        while contador < 16:
-            # Esperar pelos elementos carregarem
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'h3.ipc-title__text'))
-            )
-            
-            movie_containers = driver.find_elements(By.CSS_SELECTOR, 'div.sc-e2db8066-1.QxXCO')
-
-            # Inicializar listas para armazenar os dados            
-
-            # Iterar pelos containers de filmes
-            for container in movie_containers:
-                # Tentar pegar o título do filme
-                try:
-                    title = container.find_element(By.CSS_SELECTOR, 'h3.ipc-title__text').text
-                except:
-                    title = None  # Se não encontrar o título, atribuir None
-
-                # Tentar pegar a nota do filme
-                try:
-                    rating = container.find_element(By.CSS_SELECTOR, 'span.ipc-rating-star--rating').text
-                except:
-                    rating = None  # Se não encontrar a nota, atribuir None
-
-                # Tentar pegar o número de votos
-                try:
-                    votes_count = container.find_element(By.CSS_SELECTOR, 'span.ipc-rating-star--voteCount').text
-                except:
-                    votes_count = None  # Se não encontrar os votos, atribuir None
-
-                # Adicionar os dados nas listas
-                titles.append(title)
-                ratings.append(rating)
-                votes.append(votes_count)
-            
-
-            
-            try:
-                # Procurar e clicar no botão "Mais 50"
-                more_button = WebDriverWait(driver, 5).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, 'span.ipc-see-more__text'))
-                )
-                driver.execute_script("arguments[0].click();", more_button)
-                time.sleep(2)  # Aguardar o carregamento do conteúdo
-                contador += 1
-            except:
-                # Se não encontrar o botão, assumimos que chegamos ao fim
-                break
-                
-    except Exception as e:
-        print(f"Erro durante o scraping: {str(e)}")
+        if response.status_code == 200:
+            response_data = response.json()
+            title = response_data.get('Title', 'vazio')
+            imdb_rating = response_data.get('imdbRating', 'vazio')
+            if imdb_rating not in ['vazio', 'N/A', None, '']:
+                data.append({"filmes": title, "nota_imdb": imdb_rating})    
     
-    finally:
-        driver.quit()
-    
-    #Retornar os dados como um DataFrame
-    return pd.DataFrame({'filmes': titles, 'nota_imdb': ratings, 'votes': votes})
+    df = pd.DataFrame(data)    
+    return df
 
 
 @task
