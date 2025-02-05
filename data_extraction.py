@@ -589,10 +589,7 @@ def load_data(df, name_table, server, database, uid, pwd):
 }
 
     if name_table in column_mappings:        
-        df = df.rename(columns=column_mappings[name_table])
-    
-    id_column = 'movie_id' if 'movie_id' in df.columns else 'serie_id'
-    df = df.drop(columns=[id_column])
+        df = df.rename(columns=column_mappings[name_table])    
 
     df.to_sql(
             name=name_table,  
