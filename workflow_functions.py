@@ -161,7 +161,7 @@ def series_flow():
     data_inicio = datetime.today() - timedelta(days=17)
     data_ontem = data_inicio.strftime('%Y-%m-%d')
 
-    url_imdb = f"https://www.imdb.com/search/title/?title_type=tv_series&num_votes=50,&adult=include"
+    url_imdb = f"https://www.imdb.com/search/title/?title_type=tv_series&num_votes=1,&adult=include"
     df_imdb = scrape_imdb_titles_selenium.submit(url_imdb)
 
     df_imdb2 = get_imdb_name(df_imdb.result())    
@@ -201,7 +201,7 @@ def series_flow():
     
 
     filmes = filter_processing_final_df(df_final,
-                                        5,
+                                        4,
                                         filter_columns,
                                         columns_to_convert,
                                         columns_to_multiply,

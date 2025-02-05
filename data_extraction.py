@@ -529,6 +529,9 @@ def fetch_movie_details_by_name(movie_titles,API_KEY,base_url,type, language="pt
 @task(retries=10, retry_delay_seconds=10,cache_policy=NO_CACHE)
 def load_data(df, name_table, server, database, uid, pwd):
 
+    data = datetime.today().strftime('%Y-%m-%d')
+    df['data'] = data
+
     params = (
         'DRIVER={ODBC Driver 17 for SQL Server};'
         f'SERVER={server};'
@@ -564,7 +567,8 @@ def load_data(df, name_table, server, database, uid, pwd):
         "nota_score": "nota_score",
         "streaming": "streaming",
         "studio": "studio",
-        "film_type": "film_type"
+        "film_type": "film_type",
+        "data": "data"
     },
     "Notas_Series": {
         "movie_id": "serie_id",
@@ -584,12 +588,13 @@ def load_data(df, name_table, server, database, uid, pwd):
         "nota_score": "nota_score",
         "streaming": "streaming",
         "studio": "studio",
-        "film_type": "serie_type"
+        "film_type": "serie_type",
+        "data": "data"
     }
 }
 
     if name_table in column_mappings:        
-        df = df.rename(columns=column_mappings[name_table])    
+        df = df.rename(columns=column_mappings[name_table])        
 
     df.to_sql(
             name=name_table,  
