@@ -21,7 +21,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.exc import OperationalError
 import urllib.parse
 import json
-import pyodbc
+import pymssql
 import chromedriver_autoinstaller
 from prefect import flow, task
 import warnings
@@ -532,76 +532,70 @@ def load_data(df, name_table, server, database, uid, pwd):
     data = datetime.today().strftime('%Y-%m-%d')
     df['data'] = data
 
-    params = (
-        'DRIVER={ODBC Driver 17 for SQL Server};'
-        f'SERVER={server};'
-        f'DATABASE={database};'
-        f'UID={uid};'
-        f'PWD={pwd}'                
-    )   
-
-               
-    connection_string = f"mssql+pyodbc:///?odbc_connect={urllib.parse.quote_plus(params)}"
-
-    engine = create_engine(connection_string, fast_executemany=True)
+    # Criando a string de conexão para pymssql
+    connection_string = f"mssql+pymssql://{uid}:{pwd}@{server}/{database}"
+    
+    # Criando o engine SQLAlchemy com pymssql
+    engine = create_engine(connection_string)
 
     print("Conexão bem-sucedida!")      
 
     column_mappings = {
-    "Notas_Filmes": {
-        "movie_id": "movie_id",
-        "nome_filme": "nome_filme",
-        "movie_original": "movie_original",
-        "nome_filmes_en": "nome_filmes_en",
-        "data_lancamento_omdb": "data_lancamento",
-        "poster": "poster",
-        "nota_omdb": "nota_omdb",
-        "nota_imdb_omdb_en0": "nota_imdb_pt",
-        "nota_imdb_en0": "nota_imdb_en",
-        "nota_adorocinema": "nota_adorocinema",
-        "nota_filmow": "nota_filmow",
-        "nota_rottentomatoes": "nota_rottentomatoes",
-        "nota_letterbox": "nota_letterbox",
-        "nota_trakt": "nota_trakt",
-        "NaN_count": "NaN_count",
-        "nota_score": "nota_score",
-        "streaming": "streaming",
-        "studio": "studio",
-        "film_type": "film_type",
-        "data": "data"
-    },
-    "Notas_Series": {
-        "movie_id": "serie_id",
-        "nome_filme": "nome_serie",
-        "movie_original": "serie_original",
-        "nome_filmes_en": "nome_series_en",
-        "data_lancamento_omdb": "data_lancamento",
-        "poster": "poster",
-        "nota_omdb": "nota_omdb",
-        "nota_imdb_omdb_en0": "nota_imdb_pt",
-        "nota_imdb_en0": "nota_imdb_en",
-        "nota_adorocinema": "nota_adorocinema",
-        "nota_filmow": "nota_filmow",
-        "nota_rottentomatoes": "nota_rottentomatoes",
-        "nota_trakt": "nota_trakt",
-        "NaN_count": "NaN_count",
-        "nota_score": "nota_score",
-        "streaming": "streaming",
-        "studio": "studio",
-        "film_type": "serie_type",
-        "data": "data"
+        "Notas_Filmes": {
+            "movie_id": "movie_id",
+            "nome_filme": "nome_filme",
+            "movie_original": "movie_original",
+            "nome_filmes_en": "nome_filmes_en",
+            "data_lancamento_omdb": "data_lancamento",
+            "poster": "poster",
+            "nota_omdb": "nota_omdb",
+            "nota_imdb_omdb_en0": "nota_imdb_pt",
+            "nota_imdb_en0": "nota_imdb_en",
+            "nota_adorocinema": "nota_adorocinema",
+            "nota_filmow": "nota_filmow",
+            "nota_rottentomatoes": "nota_rottentomatoes",
+            "nota_letterbox": "nota_letterbox",
+            "nota_trakt": "nota_trakt",
+            "NaN_count": "NaN_count",
+            "nota_score": "nota_score",
+            "streaming": "streaming",
+            "studio": "studio",
+            "film_type": "film_type",
+            "data": "data"
+        },
+        "Notas_Series": {
+            "movie_id": "serie_id",
+            "nome_filme": "nome_serie",
+            "movie_original": "serie_original",
+            "nome_filmes_en": "nome_series_en",
+            "data_lancamento_omdb": "data_lancamento",
+            "poster": "poster",
+            "nota_omdb": "nota_omdb",
+            "nota_imdb_omdb_en0": "nota_imdb_pt",
+            "nota_imdb_en0": "nota_imdb_en",
+            "nota_adorocinema": "nota_adorocinema",
+            "nota_filmow": "nota_filmow",
+            "nota_rottentomatoes": "nota_rottentomatoes",
+            "nota_trakt": "nota_trakt",
+            "NaN_count": "NaN_count",
+            "nota_score": "nota_score",
+            "streaming": "streaming",
+            "studio": "studio",
+            "film_type": "serie_type",
+            "data": "data"
+        }
     }
-}
 
     if name_table in column_mappings:        
         df = df.rename(columns=column_mappings[name_table])        
 
+    # Inserindo os dados no SQL Server
     df.to_sql(
-            name=name_table,  
-            con=engine,
-            index=False,
-            if_exists="append",  
-            schema="dbo"  
-        )
+        name=name_table,  
+        con=engine,
+        index=False,
+        if_exists="append",  
+        schema="dbo"
+    )
 
     print(f"Dados inseridos na tabela {name_table} com sucesso! {df.shape[0]}")

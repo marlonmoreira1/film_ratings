@@ -8,6 +8,6 @@ prefect-github
 selenium
 chromedriver_autoinstaller
 webdriver_manager 
-pyodbc
+pymssql
 unidecode
 sqlalchemy

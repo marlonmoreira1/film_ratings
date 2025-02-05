@@ -12,7 +12,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.exc import OperationalError
 import urllib.parse
 import json
-import pyodbc
+import pymssql
 from prefect import flow, task
 import os
 from prefect.blocks.system import Secret
@@ -201,7 +201,7 @@ def series_flow():
     
 
     filmes = filter_processing_final_df(df_final,
-                                        4,
+                                        5,
                                         filter_columns,
                                         columns_to_convert,
                                         columns_to_multiply,
