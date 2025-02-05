@@ -36,3 +36,23 @@ deployments:
     timezone: America/Sao_Paulo
     day_or: true
     active: true
+- name: filmes
+  version:
+  tags: []
+  concurrency_limit:
+  description:
+  entrypoint: workflow_functions.py:main_flow
+  parameters: {}
+  work_pool:
+    name: ETL_POOL_SERVERLESS
+    work_queue_name:
+    job_variables: {}
+  schedules:
+  - cron: 30 0 * * *
+    timezone: America/Sao_Paulo
+    day_or: true
+    active: true
+  pull:
+  - prefect.deployments.steps.git_clone:
+      repository: https://github.com/marlonmoreira1/film_ratings.git
+      branch: main
