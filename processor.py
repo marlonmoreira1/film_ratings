@@ -147,7 +147,7 @@ def convert_columns(filmes_atuais,columns):
                                 filmes_atuais[col]
                                 .astype(str)
                                 .str.replace(',', '.')  
-                                .where(filmes_atuais[col].str.replace(',', '').str.isnumeric())  
+                                .apply(lambda x: x if x.replace('.', '', 1).isdigit() else None)  
                                 .astype(float)  
                             )        
 
