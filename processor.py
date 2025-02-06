@@ -145,8 +145,9 @@ def convert_columns(filmes_atuais,columns):
     for col in columns_to_convert:             
         filmes_atuais[col] = (
                                 filmes_atuais[col]
-                                .astype(str)
-                                .str.replace(',', '.')  
+                                .astype(str)  
+                                .where(filmes_atuais[col].notna())  
+                                .str.replace(',', '.', regex=False)  
                                 .apply(lambda x: x if x.replace('.', '', 1).isdigit() else None)  
                                 .astype(float)  
                             )        
