@@ -94,7 +94,7 @@ def movies_flow():
         en_movies_cinema.result()
         )
 
-    df_imdb = fetch_imdb_rating(omdb_df['movie_original'],API)
+    df_imdb = fetch_imdb_rating(omdb_df['movies_en'],API)
 
     url_base = "https://api.trakt.tv/movies/"
     trakt_df = extrair_dados_trakt.submit(url_base,omdb_df,CLIENT_ID)
@@ -177,7 +177,7 @@ def series_flow():
         en_movies_cinema.result()
         )
     
-    df_imdb = fetch_imdb_rating(omdb_df['movie_original'],API)   
+    df_imdb = fetch_imdb_rating(omdb_df['movies_en'],API)   
 
     url_base = "https://api.trakt.tv/shows/"
     trakt_df = extrair_dados_trakt.submit(url_base,omdb_df,CLIENT_ID)
