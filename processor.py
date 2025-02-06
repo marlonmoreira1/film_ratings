@@ -119,12 +119,9 @@ def where_is_now(row):
         return 'Cinema'
     return 'Streaming'
 
-def filter_films(df_final,n_count,filter_columns,columns_to_score):    
+def filter_films(df_final,n_count,filter_columns):    
 
-    df_filtro = df_final[filter_columns]
-
-    for col in columns_to_score:
-        df_filtro[col] = pd.to_numeric(df_filtro[col], errors='coerce')  
+    df_filtro = df_final[filter_columns]          
 
     df_filtro['NaN_count'] = df_filtro.isna().sum(axis=1)
 
@@ -145,8 +142,14 @@ def convert_columns(filmes_atuais,columns):
 
     columns_to_convert = columns
 
-    for col in columns_to_convert:        
-        filmes_atuais[col] = filmes_atuais[col].astype(str).str.replace(',', '.').astype(float)
+    for col in columns_to_convert:             
+        filmes_atuais[col] = (
+                                filmes_atuais[col]
+                                .astype(str)
+                                .str.replace(',', '.')  
+                                .where(filmes_atuais[col].str.replace(',', '').str.isnumeric())  
+                                .astype(float)  
+                            )        
 
     return filmes_atuais
 
@@ -177,7 +180,7 @@ def filter_processing_final_df(
                             columns_to_score
                             ):
 
-    filmes_atuais = filter_films(df_final,n_count,filter_columns,columns_to_score)    
+    filmes_atuais = filter_films(df_final,n_count,filter_columns)    
 
     filmes_atuais = convert_columns(filmes_atuais,columns_to_convert)    
 
