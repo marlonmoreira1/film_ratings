@@ -11,3 +11,5 @@ webdriver_manager
 pymssql
 unidecode
 sqlalchemy
+streamlit
+streamlit-autorefresh
