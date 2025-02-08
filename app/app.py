@@ -19,23 +19,26 @@ series = series.rename(columns=colunas_correspondentes)
 
 json_filtro = {
             "Filmes": filmes,
-            "Series": series
+            "Séries": series
             }
 
-filtro = st.segmented_control(
-    "Série ou Filme",
-    options=json_filtro.keys(),
-    selection_mode="single",
-    default="Filmes"
-)
+colunas = st.columns([1, 1, 1]) 
+
+with colunas[1]:
+    filtro = st.segmented_control(
+        "Série ou Filme",
+        options=json_filtro.keys(),
+        selection_mode="single",
+        default="Filmes"
+    )
+
+st.write('')
 
 dados = json_filtro[filtro]
 
 dados = dados.sort_values(by="nota_score", ascending=False)
 
 dados["nota_score"] = dados["nota_score"].str.replace(',', '.').astype(float).round(1)
-
-st.title(f"{filtro} mais bem Avaliados")
 
 filmes_por_pagina = 10  
 total_produtos = dados.shape[0]
@@ -48,9 +51,18 @@ inicio = (st.session_state.pagina_atual - 1) * filmes_por_pagina
 fim = inicio + filmes_por_pagina
 filmes_pagina = dados["nome_filme"].unique()[inicio:fim]
 
+cols = st.columns([2, 1])  
 
-st.write(f"### Página {st.session_state.pagina_atual} de {total_paginas}")
-for filme in filmes_pagina:
+with cols[0]:  
+    st.write(f"### {filtro} mais bem Avaliados")  
+
+with cols[1]:  
+    st.write(f"### Página {st.session_state.pagina_atual} de {total_paginas}") 
+
+st.write('')
+st.write('')
+
+for i, filme in enumerate(filmes_pagina):
     
     filme = dados[dados["nome_filme"] == filme].iloc[0]
     nome = filme["nome_filme"]
@@ -63,12 +75,15 @@ for filme in filmes_pagina:
         studio = filme["studio"]
         extra_info = f"**Studio:** {studio}"
 
-    
-    st.markdown(f"### {nome}")  
-    st.image(poster, caption=nome, use_container_width=True)  
-    st.write(f"- **Nota:** {nota}")
-    st.write(f"- {extra_info}")
+    borda = st.columns(1)[0]
 
+    with borda.container(border=True):        #TO DO
+        st.markdown(f"### {i+1}° - {nome}") #Tirar o ranking pelo indice do loop e trazer da consulta do banco.    
+        st.write(f"- **Nota:** {nota}")
+        st.write(f"- {extra_info}")
+        st.image(poster, caption=nome,use_container_width=True)
+
+    st.write('')
 
 pagina_atual = st.number_input(
     "Página",
