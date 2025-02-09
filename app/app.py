@@ -2,10 +2,12 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
-
+from carrossel import get_carousel
 
 filmes = pd.read_csv('C:/filmes_ratings/dados/filmes.csv')
 series = pd.read_csv('C:/filmes_ratings/dados/series.csv')
+
+st.markdown(get_carousel(), unsafe_allow_html=True)
 
 colunas_correspondentes = {
     "serie_id": "movie_id",
@@ -71,17 +73,16 @@ for i, filme in enumerate(filmes_pagina):
     if filme["film_type"] == 'Streaming':
         streaming = filme["streaming"]
         extra_info = f"**Streaming:** {streaming}"
-    else:
-        studio = filme["studio"]
-        extra_info = f"**Studio:** {studio}"
+    else:        
+        extra_info = f"**Cinema**" if filtro == "Filmes" else f"**TV**"
 
-    borda = st.columns(1)[0]
+    borda = st.columns([0.1, 1, 0.2])
 
-    with borda.container(border=True):        #TO DO
-        st.markdown(f"### {i+1}° - {nome}") #Tirar o ranking pelo indice do loop e trazer da consulta do banco.    
-        st.write(f"- **Nota:** {nota}")
-        st.write(f"- {extra_info}")
-        st.image(poster, caption=nome,use_container_width=True)
+    with borda[1].container(border=True):        #TO DO
+        st.markdown(f"#### {i+1}° - {nome}") #Tirar o ranking pelo indice do loop e trazer da consulta do banco.    
+        st.write(f"##### - **Nota:** {nota}")
+        st.write(f"##### - {extra_info}")
+        st.image(poster, caption=nome)
 
     st.write('')
 
