@@ -1,9 +1,41 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+from carrossel import get_carousel
+import pymssql
+import os
+from sqlalchemy import create_engine, event
+from sqlalchemy.exc import OperationalError
+import urllib.parse
+from collect_data import get_data
+from queries import QUERY_FILMES, QUERY_SERIES
+from dotenv import load_dotenv
 
-filmes = pd.read_csv('C:/filmes_ratings/dados/filmes.csv')
-series = pd.read_csv('C:/filmes_ratings/dados/series.csv')
+load_dotenv()
+
+SERVER = os.environ["SERVER"]
+DATABASE = os.environ["DATABASE"]
+UID = os.environ["UID"]
+PWD = os.environ["PWD"]
+
+filmes = get_data(
+                QUERY_FILMES,
+                SERVER,
+                DATABASE,
+                UID,
+                PWD
+                )
+
+
+series = get_data(QUERY_SERIES,
+                SERVER,
+                DATABASE,
+                UID,
+                PWD
+                )
+
+st.markdown(get_carousel(), unsafe_allow_html=True)
+
 
 colunas_correspondentes = {
     "serie_id": "movie_id",
@@ -32,7 +64,7 @@ dados = json_filtro[filtro]
 
 dados = dados.sort_values(by="nota_score", ascending=False)
 
-dados["nota_score"] = dados["nota_score"].str.replace(',', '.').astype(float).round(1)
+dados["nota_score"] = dados["nota_score"].astype(str).str.replace(',', '.').astype(float).round(1)
 
 dados = dados[dados['film_type']=='Streaming']
 
