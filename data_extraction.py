@@ -347,7 +347,7 @@ def discover_movies(start_date, end_date,language,API_KEY,base_url,end_point):
 
 
 @task(retries=5, retry_delay_seconds=15)
-def now_playing_movies(language,API_KEY,base_url,end_point,name,original_name, region="BR", max_pages=20):
+def now_playing_movies(language,API_KEY,base_url,end_point,name,original_name, region="BR", max_pages=21):
     
     now_playing_url = f"{base_url}/{end_point}"
     all_movies = []

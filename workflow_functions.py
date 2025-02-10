@@ -87,22 +87,24 @@ def movies_flow():
     pt_movies_cinema = now_playing_movies.submit(pt,API_KEY,base_url,end_point_streaming,'title','original_title')
     en_movies_cinema = now_playing_movies.submit(en,API_KEY,base_url,end_point_streaming,'title','original_title')    
 
-    omdb_df = join_omdbdfs(
+    omdb_df = join_omdbdfs.submit(
         pt_movies.result(),
         en_movies.result(),
         pt_movies_cinema.result(),
         en_movies_cinema.result()
         )
 
-    df_imdb = fetch_imdb_rating(omdb_df['movie_original'],API)
+    omdb_df_result = omdb_df.result()
+
+    df_imdb = fetch_imdb_rating.submit(omdb_df_result['movie_original'],API)
 
     url_base = "https://api.trakt.tv/movies/"
-    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df,CLIENT_ID)
+    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df_result,CLIENT_ID)
 
-    pt_dfs = [df_imdb,df_filmow_final.result(),df_adorocinema.result()]
-    en_dfs = [df_imdb,df_rt_final.result(),letterbox_df.result(),trakt_df.result()]
+    pt_dfs = [df_imdb.result(),df_filmow_final.result(),df_adorocinema.result()]
+    en_dfs = [df_imdb.result(),df_rt_final.result(),letterbox_df.result(),trakt_df.result()]
 
-    df_final = merge_dfs(omdb_df,pt_dfs,en_dfs)
+    df_final = merge_dfs(omdb_df_result,pt_dfs,en_dfs)
 
     df_final = weekly_filter(df_final)
 
@@ -172,20 +174,22 @@ def series_flow():
     pt_movies_cinema = now_playing_movies.submit(pt,API_KEY,base_url,end_point_streaming,'name','original_name')
     en_movies_cinema = now_playing_movies.submit(en,API_KEY,base_url,end_point_streaming,'name','original_name')    
 
-    omdb_df = join_omdbdfs_series(        
+    omdb_df = join_omdbdfs_series.submit(        
         pt_movies_cinema.result(),
         en_movies_cinema.result()
         )
+
+    omdb_df_result = omdb_df.result()
     
-    df_imdb = fetch_imdb_rating(omdb_df['movie_original'],API)   
+    df_imdb = fetch_imdb_rating.submit(omdb_df_result['movie_original'],API)   
 
     url_base = "https://api.trakt.tv/shows/"
-    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df,CLIENT_ID)
+    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df_result,CLIENT_ID)
 
-    pt_dfs = [df_imdb,df_filmow.result(),df_adorocinema.result()]
-    en_dfs = [df_imdb,df_rt_clean,trakt_df.result()]
+    pt_dfs = [df_imdb.result(),df_filmow.result(),df_adorocinema.result()]
+    en_dfs = [df_imdb.result(),df_rt_clean,trakt_df.result()]
 
-    df_final = merge_dfs(omdb_df,pt_dfs,en_dfs)    
+    df_final = merge_dfs(omdb_df_result,pt_dfs,en_dfs)    
     
 
     filmes = filter_processing_final_df(df_final,
