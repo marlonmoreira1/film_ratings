@@ -19,6 +19,8 @@ colunas_correspondentes = {
 
 series = series.rename(columns=colunas_correspondentes)
 
+series['film_type'] = series['film_type'].replace('Cinema','TV')
+
 json_filtro = {
             "Filmes": filmes,
             "Séries": series
@@ -28,19 +30,47 @@ colunas = st.columns([1, 1, 1])
 
 with colunas[1]:
     filtro = st.segmented_control(
-        "Série ou Filme",
+        "",
         options=json_filtro.keys(),
         selection_mode="single",
         default="Filmes"
     )
 
 st.write('')
-
-dados = json_filtro[filtro]
+if filtro:
+    dados = json_filtro[filtro]
+else:
+    dados=filmes
+    filtro="Filmes"
 
 dados = dados.sort_values(by="nota_score", ascending=False)
 
 dados["nota_score"] = dados["nota_score"].str.replace(',', '.').astype(float).round(1)
+
+tipo_colunas = st.columns([1, 1, 1])
+
+with colunas[1]:
+    tipo_filtro = st.segmented_control(
+        "",
+        options=dados['film_type'].unique(),
+        selection_mode="single",
+        default=None
+    )
+
+
+if tipo_filtro:
+    dados = dados[dados['film_type']==tipo_filtro]
+
+if tipo_filtro == 'Streaming':
+    plataformas = st.radio(
+                    "",
+                    dados[~dados['streaming'].isna()]['streaming'].unique(),
+                    index=None,
+                    horizontal=True
+                        )
+    if plataformas:
+        dados = dados[dados['streaming']==plataformas]
+        
 
 filmes_por_pagina = 10  
 total_produtos = dados.shape[0]
