@@ -11,7 +11,7 @@ import warnings
 warnings.simplefilter(action='ignore')
 
 
-@task
+@task(retries=5, retry_delay_seconds=15)
 def join_omdbdfs(pt_movies,en_movies,pt_movies_cinema,en_movies_cinema):
     en_movies = en_movies.rename(columns={"movies": "movies_en"})
     en_movies_cinema = en_movies_cinema.rename(columns={"movies": "movies_en"})
@@ -35,7 +35,7 @@ def join_omdbdfs(pt_movies,en_movies,pt_movies_cinema,en_movies_cinema):
 
 
 
-@task
+@task(retries=5, retry_delay_seconds=15)
 def join_omdbdfs_series(pt_movies_cinema,en_movies_cinema):
     
     en_movies_cinema = en_movies_cinema.rename(columns={"movies": "movies_en"})    
@@ -55,18 +55,20 @@ def remove_accents(input_str):
     return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 
+
 def preprocess_text(col):
     return (
         col.fillna("")
-           .str.lower()                          # Tudo em minúsculas
-           .str.strip()                          # Remove espaços no início e no final
-           .apply(remove_accents)               # Remove acentos
-           .str.replace(r'[^\w\s]', '', regex=True)  # Remove caracteres especiais
-           .str.replace(r'\s+', '', regex=True)  # Remove todos os espaços entre palavras
+           .str.lower()                          
+           .str.strip()                          
+           .apply(remove_accents)               
+           .str.replace(r'[^\w\s]', '', regex=True)  
+           .str.replace(r'\s+', '', regex=True)  
     )
 
 
-@task
+
+@task(retries=5, retry_delay_seconds=15)
 def merge_dfs(omdb_df,pt_dfs,en_dfs):
 
     omdb_df['nome_filme'] = omdb_df['movies']
@@ -102,10 +104,12 @@ def merge_dfs(omdb_df,pt_dfs,en_dfs):
     return df_final
     
 
+
 def replace_zeros(row):
     if row == 0:
         return np.nan
     return row
+
 
 
 def replace_duplicate_imdb_notes(x, y):
@@ -114,10 +118,13 @@ def replace_duplicate_imdb_notes(x, y):
     return y
 
 
+
 def where_is_now(row):
     if row == 'N/A':
         return 'Cinema'
     return 'Streaming'
+
+
 
 def filter_films(df_final,n_count,filter_columns):    
 
@@ -131,12 +138,15 @@ def filter_films(df_final,n_count,filter_columns):
 
     return filmes_duplicados
 
-@task
+
+@task(retries=5, retry_delay_seconds=15)
 def weekly_filter(df):
     data_inicio = datetime.today() - timedelta(days=17)
     data_ontem = data_inicio.strftime('%Y-%m-%d')
     df = df[df['data_lancamento_omdb']>data_ontem]
     return df
+
+
 
 def convert_columns(filmes_atuais,columns):
 
@@ -155,6 +165,7 @@ def convert_columns(filmes_atuais,columns):
     return filmes_atuais
 
 
+
 def scale_columns(filmes_atuais,columns_to_multiply,columns_to_divide):
 
     for col in columns_to_multiply:
@@ -166,11 +177,14 @@ def scale_columns(filmes_atuais,columns_to_multiply,columns_to_divide):
     return filmes_atuais
 
 
+
 def get_median(filmes_atuais,columns_to_score):
     filmes_atuais['nota_score'] = filmes_atuais[columns_to_score].apply(lambda row: row.dropna().median(), axis=1)
     return filmes_atuais
 
-@task
+
+
+@task(retries=5, retry_delay_seconds=15)
 def filter_processing_final_df(
                             df_final,
                             n_count,
@@ -204,34 +218,36 @@ def filter_processing_final_df(
 
 
 
-@task
+@task(retries=5, retry_delay_seconds=15)
 def print_film(new_films):
     print(new_films)
 
-@task
+
+
+@task(retries=5, retry_delay_seconds=15)
 def get_imdb_name(df_imdb):
     df_imdb["filmes"] = df_imdb["filmes"].str.replace(r"^\d+\.\s*", "", regex=True)
     return df_imdb
 
-@task
+@task(retries=5, retry_delay_seconds=15)
 def concat_rt(df_rt,df_rt_cinema):
     df_rt_final = pd.concat([df_rt,df_rt_cinema])
     df_rt_final['nota_rottentomatoes'] = df_rt_final['nota_rottentomatoes'].replace('',np.nan)
     return df_rt_final
 
-@task
+@task(retries=5, retry_delay_seconds=15)
 def replace_rt(df_rt):
     df_rt['nota_rottentomatoes'] = df_rt['nota_rottentomatoes'].replace('',np.nan)
     return df_rt
 
 
-@task
+@task(retries=5, retry_delay_seconds=15)
 def concat_filmow(df_filmow,df_filmow_streaming):
     df_filmow_final = pd.concat([df_filmow,df_filmow_streaming])
     return df_filmow_final
 
 
-@task
+@task(retries=5, retry_delay_seconds=15)
 def merge_new_movies(filmes,movies_df):
     new_filmes = pd.merge(
         filmes,
@@ -244,7 +260,7 @@ def merge_new_movies(filmes,movies_df):
 
     return new_filmes
     
-@task
+@task(retries=5, retry_delay_seconds=15)
 def printar_filmes(df_final):
     df_columns = df_final.columns
     print(df_columns)

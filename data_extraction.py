@@ -28,7 +28,7 @@ import warnings
 warnings.simplefilter(action='ignore')
 
 
-@task
+@task(retries=5, retry_delay_seconds=15)
 def fetch_imdb_rating(movies, omdb_api_key):    
     
     data = []
@@ -48,104 +48,88 @@ def fetch_imdb_rating(movies, omdb_api_key):
     return df
 
 
-@task
-def extract_movies_data(url):
-    """
-    Raspa dados de filmes do Rotten Tomatoes e retorna um DataFrame do pandas.
-
-    Args:
-        url (str): URL da página do Rotten Tomatoes.
-
-    Returns:
-        pd.DataFrame: Um DataFrame com os dados extraídos.
-    """
-    # Fazer uma requisição HTTP para obter o conteúdo HTML
+@task(retries=5, retry_delay_seconds=15)
+def extract_movies_data(url):   
+    
     response = requests.get(url)
 
-    # Verificar se a requisição foi bem-sucedida
+    
     if response.status_code != 200:
         raise Exception(f"Erro ao acessar a página: {response.status_code}")
 
-    # Parsear o HTML
+    
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    # Lista para armazenar os dados extraídos
+    
     movies_data = []
 
-    # Encontrar todos os containers de filmes
+    
     movies = soup.find_all('div', class_='flex-container')
 
-    # Iterar sobre cada filme e extrair informações
+    
     for movie in movies:
         movie_data = {}
 
-        # Título do filme
+        
         title_tag = movie.find('span', {'data-qa': 'discovery-media-list-item-title'})
         movie_data['filmes'] = title_tag.text.strip() if title_tag else 'N/A'
 
-        # Data de streaming
+        
         date_tag = movie.find('span', {'data-qa': 'discovery-media-list-item-start-date'})
         movie_data['streaming_date'] = date_tag.text.strip() if date_tag else 'N/A'
 
-        # Trailer disponível?
+        
         is_video = movie.find('tile-dynamic', {'isvideo': 'true'})
         movie_data['has_trailer'] = True if is_video else False
 
-        # Nota dos críticos
+        
         critics_score_tag = movie.find('rt-text', {'slot': 'criticsScore'})
         movie_data['critics_score'] = critics_score_tag.text.strip() if critics_score_tag else 'N/A'
 
-        # Nota da audiência
+        
         audience_score_tag = movie.find('rt-text', {'slot': 'audienceScore'})
         movie_data['nota_rottentomatoes'] = audience_score_tag.text.strip() if audience_score_tag else 'N/A'
 
-        # Adicionar os dados do filme à lista
+        
         movies_data.append(movie_data)
 
-    # Converter para DataFrame do pandas
+    
     df = pd.DataFrame(movies_data)
     return df
 
-@task
+
+
+
+@task(retries=5, retry_delay_seconds=15)
 def extrair_filmes_e_notas(url,num_pages):
-    """
-    Extrai o nome de todos os filmes e suas respectivas notas do Filmow.
     
-    Parâmetros:
-        url (str): URL da página do Filmow contendo a lista de filmes.
-        
-    Retorna:
-        pandas.DataFrame: DataFrame contendo os nomes dos filmes e as notas.
-    """
     try:
-        # Configurar headers para simular um navegador
+        
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
         
-        # Listas para armazenar os dados
+        
         nomes_filmes = []
         notas_filmes = []
 
-        # Fazer a requisição HTTP para a URL
+        
         for page in range(1,num_pages):
             url_din = f"{url}&pagina={page}"
             response = requests.get(url_din, headers=headers)
             response.raise_for_status()
 
-            # Analisar o conteúdo HTML com BeautifulSoup
+            
             soup = BeautifulSoup(response.text, 'html.parser')
 
-            # Localizar todos os elementos de filme usando a classe cover
+            
             filmes_blocos = soup.find_all('a', class_='cover')            
 
-            # Iterar por cada bloco de filme e extrair dados
+            
             for bloco in filmes_blocos:
-                # Nome do filme está no atributo title
+                
                 nome_filme = bloco.get('title')
-
-                # A nota está em um elemento próximo com valor numérico
-                # Procurar no elemento pai ou irmão
+                
                 nota_element = bloco.find_next('span', class_='movie-rating-average')
 
                 if nota_element:
@@ -153,18 +137,17 @@ def extrair_filmes_e_notas(url,num_pages):
                 else:
                     nota = "Sem nota"
 
-                if nome_filme:  # Só adiciona se encontrou um nome válido
+                if nome_filme:  
                     nomes_filmes.append(nome_filme)
-                    notas_filmes.append(nota)
-            
+                    notas_filmes.append(nota)            
         
-        # Criar um DataFrame com os dados extraídos
+        
         df = pd.DataFrame({
             'filmes': nomes_filmes,
             'nota_filmow': notas_filmes
         })
         
-        # Remover possíveis duplicatas
+        
         df = df.drop_duplicates()
         
         return df
@@ -174,68 +157,61 @@ def extrair_filmes_e_notas(url,num_pages):
         return pd.DataFrame(columns=['filmes', 'nota_filmow'])
 
 
-@task
-def extrair_dados_adorocinema(base_url, num_paginas=16):
-    """
-    Extrai informações dos filmes do AdoroCinema em várias páginas.
+
+
+
+@task(retries=5, retry_delay_seconds=15)
+def extrair_dados_adorocinema(base_url, num_paginas=16):    
     
-    Parâmetros:
-        base_url (str): URL base da página do AdoroCinema contendo os filmes.
-        num_paginas (int): Número de páginas para percorrer. Default é 10.
-        
-    Retorna:
-        pandas.DataFrame: DataFrame contendo nome do filme, data de lançamento e nota de usuários.
-    """
-    # Listas para armazenar os dados
     nomes_filmes = []
     datas_lancamento = []
     notas_usuarios = []
 
     try:
         for page in range(1, num_paginas + 1):
-            # Monta a URL da página atual
+            
             url = f"{base_url}?page={page}"
             response = requests.get(url)
             response.raise_for_status()
 
-            # Analisar o HTML da página
+            
             soup = BeautifulSoup(response.text, 'html.parser')
 
-            # Localizar todos os blocos de filmes
+            
             filmes_blocos = soup.find_all('div', class_='card entity-card entity-card-list cf')
 
             for bloco in filmes_blocos:
-                # Nome do filme
+                
                 nome_element = bloco.find('h2', class_='meta-title')
                 nome_filme = nome_element.get_text(strip=True) if nome_element else "Sem título"
 
-                # Data de lançamento
+                
                 data_element = bloco.find('span', class_='date')
                 data_lancamento = data_element.get_text(strip=True) if data_element else "Data não encontrada"
                 
                 notas_usuario = []
 
-                # Nota de usuários
+                
                 rating_items = bloco.find_all('div', class_='rating-item')
                 
                 for item in rating_items:
                     rating_title = item.find('span', class_='rating-title')
                     if rating_title and 'Usuários' in rating_title.get_text(strip=True):
-                        # Encontrar a nota do usuário
+                        
                         nota_element = item.find('span', class_='stareval-note')
                         if nota_element:
                             notas_usuario.append(nota_element.get_text(strip=True))
 
-                # Se houver notas de usuários, pega a primeira; se não, deixa "Sem nota"
+                
                 nota_usuario = ', '.join(notas_usuario) if notas_usuario else "Sem nota"
                                    
 
-                # Adicionar aos dados
+                
                 nomes_filmes.append(nome_filme)
                 datas_lancamento.append(data_lancamento)
                 notas_usuarios.append(nota_usuario)
 
-        # Criar um DataFrame com os dados extraídos
+        
         df = pd.DataFrame({
             'filmes': nomes_filmes,
             'data_lancamento': datas_lancamento,
@@ -248,32 +224,27 @@ def extrair_dados_adorocinema(base_url, num_paginas=16):
         print(f"Erro ao extrair dados: {e}")
         return pd.DataFrame(columns=['Nome do Filme', 'Data de Lançamento', 'Nota dos Usuários'])
 
-@task
+
+
+
+@task(retries=5, retry_delay_seconds=15)
 def extrair_filmes_letterboxd():
-    """
-    Extrai os nomes dos filmes e suas respectivas notas da página do Letterboxd.
     
-    Parâmetros:
-        url (str): URL da página do Letterboxd.
-        
-    Retorna:
-        pandas.DataFrame: DataFrame contendo informações dos filmes.
-    """
     data = []
     
     try:
         for page in range(1, 15):
-            # Construir URL com paginação
+            
             if page == 1:
                 url_page = 'https://letterboxd.com/films/ajax/popular/this/week/?esiAllowFilters=true'
             else:
                 url_page = f'https://letterboxd.com/films/ajax/popular/this/week/page/{page}/?esiAllowFilters=true'
             
-            # Fazer a requisição
+            
             response = requests.get(url_page)
             soup = BeautifulSoup(response.text, 'html.parser')
             
-            # Extrair dados
+            
             for elemento in soup.select('li.listitem'):
                 filme = {
                     'filmes': elemento.img.get('alt'),                    
@@ -282,29 +253,27 @@ def extrair_filmes_letterboxd():
                 }
                 data.append(filme)
             
-            # Pequena pausa entre requisições
+            
             time.sleep(2)
     
     except Exception as e:
         print(f"Erro durante a extração: {str(e)}")
         raise
     
-    # Criar DataFrame
+    
     df = pd.DataFrame(data)
     return df
 
     
 
 
-
-def slugify(title):
-    # Substitui caracteres especiais por um hífen e converte para minúsculas
-    title = re.sub(r'[:;,.]', '', title.lower())  # Remove caracteres não alfanuméricos
-    title = re.sub(r'[\s_-]+', '-', title)  # Substitui espaços e underlines por hífens
+def slugify(title):    
+    title = re.sub(r'[:;,.]', '', title.lower())  
+    title = re.sub(r'[\s_-]+', '-', title)  
     return title.strip('-')
 
 
-@task
+@task(retries=5, retry_delay_seconds=15)
 def extrair_dados_trakt(url,movie_slugs, client_id):
     url_base = url
     headers = {
@@ -331,14 +300,14 @@ def extrair_dados_trakt(url,movie_slugs, client_id):
         else:
             pass
     
-    # Converte a lista de filmes em um DataFrame
+    
     df_movies = pd.DataFrame(movie_details)
     return df_movies
 
 
 
-# Função para buscar filmes lançados entre duas datas e retornar um DataFrame
-@task
+
+@task(retries=5, retry_delay_seconds=15)
 def discover_movies(start_date, end_date,language,API_KEY,base_url,end_point):    
 
 
@@ -352,7 +321,7 @@ def discover_movies(start_date, end_date,language,API_KEY,base_url,end_point):
     response = requests.get(discover_url, params=params)
     if response.status_code == 200:
         movies = response.json()
-        # Processando os dados e retornando como DataFrame
+        
         if movies and movies['results']:
             movie_data = [{
                 "movie_id": movie.get('id'),
@@ -362,35 +331,37 @@ def discover_movies(start_date, end_date,language,API_KEY,base_url,end_point):
                 "data_lancamento": movie.get('release_date'),                
                 "poster": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}" if movie.get('poster_path') else None
             } for movie in movies['results']]
-            # Criando e retornando o DataFrame
+            
             return pd.DataFrame(movie_data)
         else:
             print("Nenhum filme encontrado.")
-            return pd.DataFrame()  # Retorna um DataFrame vazio caso não haja resultados
+            return pd.DataFrame()  
     else:
         print(f"Erro: {response.status_code}, {response.json()}")
-        return pd.DataFrame()  # Retorna um D
+        return pd.DataFrame()  
 
 
-@task
+
+
+@task(retries=5, retry_delay_seconds=15)
 def now_playing_movies(language,API_KEY,base_url,end_point,name,original_name, region="BR", max_pages=21):
     
     now_playing_url = f"{base_url}/{end_point}"
     all_movies = []
     
-    for page in range(1, max_pages + 1):  # Iterar apenas pelas 3 primeiras páginas
+    for page in range(1, max_pages + 1):  
         params = {
             "api_key": API_KEY,
             "language": language,
             "region": region,
-            "page": page,  # Página atual
+            "page": page,  
         }
         response = requests.get(now_playing_url, params=params)
         
         if response.status_code == 200:
             movies = response.json()
             
-            # Adicionar os filmes retornados à lista
+            
             if movies and movies['results']:
                 all_movies.extend([{
                     "movie_id": movie.get('id'),
@@ -401,23 +372,23 @@ def now_playing_movies(language,API_KEY,base_url,end_point,name,original_name, r
                     "poster": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}" if movie.get('poster_path') else None
                 } for movie in movies['results']])
             else:
-                break  # Interromper se não houver mais resultados
+                break  
         else:
             print(f"Erro: {response.status_code}, {response.json()}")
             break
     
-    # Criar DataFrame final
+    
     return pd.DataFrame(all_movies)
 
 
 
-@task
+
+@task(retries=5, retry_delay_seconds=15)
 def fetch_movie_details_by_name(movie_titles,API_KEY,base_url,type, language="pt-BR", region="BR"):
-    all_details = []
-     
+    all_details = []     
 
     for _, row in movie_titles.iterrows():
-        # Endpoint para buscar o filme pelo nome
+       
         original_title = row['movie_original']
         movie_title = row['nome_filme']
         movie_id = row['movie_id']
@@ -427,18 +398,16 @@ def fetch_movie_details_by_name(movie_titles,API_KEY,base_url,type, language="pt
         
         movie_details = movie_details_response.json()
         studios_details = movie_details.get("production_companies", [])
-        studios = studios_details[0]['name'] if studios_details else "N/A"
-        
+        studios = studios_details[0]['name'] if studios_details else "N/A"        
        
-        # Buscar as plataformas de streaming
+        
         streaming_url = f"{base_url}/{type}/{movie_id}/watch/providers"
         streaming_response = requests.get(streaming_url, params={"api_key": API_KEY})
         
         streaming_data = streaming_response.json()
         streaming_providers = streaming_data.get("results", {}).get(region, {}).get("flatrate", [])
-        streaming_names = streaming_providers[0]['provider_name'] if streaming_providers else "N/A"        
-
-        # Adiciona todos os detalhes à lista
+        streaming_names = streaming_providers[0]['provider_name'] if streaming_providers else "N/A"
+        
         all_details.append({
             "movie_id": movie_id,
             "nome_filme": movie_title,
@@ -446,10 +415,11 @@ def fetch_movie_details_by_name(movie_titles,API_KEY,base_url,type, language="pt
             "streaming": streaming_names,
             "studio": studios
         })
-                
-
-    # Criar DataFrame final com os resultados
+    
     return pd.DataFrame(all_details)
+
+
+
 
 
 @task(retries=10, retry_delay_seconds=10,cache_policy=NO_CACHE)
@@ -458,10 +428,10 @@ def load_data(df, name_table, server, database, uid, pwd):
     data = datetime.today().strftime('%Y-%m-%d')
     df['data'] = data
 
-    # Criando a string de conexão para pymssql
+    
     connection_string = f"mssql+pymssql://{uid}:{pwd}@{server}/{database}"
     
-    # Criando o engine SQLAlchemy com pymssql
+    
     engine = create_engine(connection_string)
 
     print("Conexão bem-sucedida!")      
@@ -515,7 +485,7 @@ def load_data(df, name_table, server, database, uid, pwd):
     if name_table in column_mappings:        
         df = df.rename(columns=column_mappings[name_table])        
 
-    # Inserindo os dados no SQL Server
+    
     df.to_sql(
         name=name_table,  
         con=engine,
