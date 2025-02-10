@@ -212,8 +212,8 @@ def series_flow():
 
 
 @flow(name="Main Workflow")
-def main_flow():
-    movies_flow()
+def main_flow(timeout_seconds=1800):
+    movies_flow()    
     series_flow()
 
 

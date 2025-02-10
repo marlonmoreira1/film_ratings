@@ -14,6 +14,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
+from datetime import datetime, timedelta
+import time
 from prefect.cache_policies import NO_CACHE
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import random
@@ -42,7 +44,8 @@ def fetch_imdb_rating(movies, omdb_api_key):
             title = response_data.get('Title', 'vazio')
             imdb_rating = response_data.get('imdbRating', 'vazio')
             if imdb_rating not in ['vazio', 'N/A', None, '']:
-                data.append({"filmes": title, "nota_imdb": imdb_rating})    
+                data.append({"filmes": title, "nota_imdb": imdb_rating})
+        time.sleep(1)   
     
     df = pd.DataFrame(data)    
     return df
@@ -344,7 +347,7 @@ def discover_movies(start_date, end_date,language,API_KEY,base_url,end_point):
 
 
 @task(retries=5, retry_delay_seconds=15)
-def now_playing_movies(language,API_KEY,base_url,end_point,name,original_name, region="BR", max_pages=21):
+def now_playing_movies(language,API_KEY,base_url,end_point,name,original_name, region="BR", max_pages=20):
     
     now_playing_url = f"{base_url}/{end_point}"
     all_movies = []
