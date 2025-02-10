@@ -44,8 +44,7 @@ def fetch_imdb_rating(movies, omdb_api_key):
             title = response_data.get('Title', 'vazio')
             imdb_rating = response_data.get('imdbRating', 'vazio')
             if imdb_rating not in ['vazio', 'N/A', None, '']:
-                data.append({"filmes": title, "nota_imdb": imdb_rating})
-        time.sleep(1)   
+                data.append({"filmes": title, "nota_imdb": imdb_rating})          
     
     df = pd.DataFrame(data)    
     return df
