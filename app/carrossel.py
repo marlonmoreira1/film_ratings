@@ -2,7 +2,7 @@ def get_carousel():
     carousel_html = """
     <style>
         .carousel-container {
-            width: 67%;
+            width: 100%;
             overflow: hidden;
             position: relative;
             background-color: #000;
@@ -15,7 +15,7 @@ def get_carousel():
             animation: slide 10s linear infinite;
         }
         .carousel-slide img {
-            width: 75px;
+            width: 100px;
             height: auto;
             margin: 0 15px;
         }

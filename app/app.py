@@ -13,6 +13,20 @@ from collect_data import get_data
 from queries import QUERY_FILMES, QUERY_SERIES
 from dotenv import load_dotenv
 
+st.set_page_config(page_title='Filmes',layout='centered')
+
+st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 3rem;
+                    padding-bottom: 5rem;
+                    padding-left: 2rem;
+                    padding-right: 2rem;                    
+                }
+        </style>
+        """, unsafe_allow_html=True)
+
+
 load_dotenv()
 
 SERVER = os.environ["SERVER"]
@@ -36,6 +50,7 @@ series = get_data(QUERY_SERIES,
                 PWD
                 )
 
+st.write(f"##### Fontes dos Dados")
 st.markdown(get_carousel(), unsafe_allow_html=True)
 
 colunas_correspondentes = {
@@ -65,7 +80,7 @@ with colunas[1]:
         default="Filmes"
     )
 
-st.write('')
+
 if filtro:
     dados = json_filtro[filtro]
 else:
@@ -76,9 +91,9 @@ dados = dados.sort_values(by="nota_score", ascending=False)
 
 dados["nota_score"] = dados["nota_score"].astype(str).str.replace(',', '.').astype(float).round(1)
 
-tipo_colunas = st.columns([1, 1, 1])
+tipo_colunas = st.columns([0.9,1,1])
 
-with colunas[1]:
+with tipo_colunas[1]:
     tipo_filtro = st.segmented_control(
         "",
         options=dados['film_type'].unique(),
@@ -86,6 +101,7 @@ with colunas[1]:
         default=None
     )
 
+st.write('')
 
 if tipo_filtro:
     dados = dados[dados['film_type']==tipo_filtro]
@@ -112,7 +128,7 @@ inicio = (st.session_state.pagina_atual - 1) * filmes_por_pagina
 fim = inicio + filmes_por_pagina
 filmes_pagina = dados["nome_filme"].unique()[inicio:fim]
 
-cols = st.columns([2, 1])  
+cols = st.columns([2, 1])
 
 with cols[0]:  
     st.write(f"### {filtro} mais bem Avaliados")  
@@ -120,7 +136,6 @@ with cols[0]:
 with cols[1]:  
     st.write(f"### Página {st.session_state.pagina_atual} de {total_paginas}") 
 
-st.write('')
 st.write('')
 
 for i, filme in enumerate(filmes_pagina):
@@ -138,11 +153,11 @@ for i, filme in enumerate(filmes_pagina):
 
     borda = st.columns([0.1, 1, 0.2])
 
-    with borda[1].container(border=True):        #TO DO
-        st.markdown(f"#### {i+inicio+1}° - {nome}") #Tirar o ranking pelo indice do loop e trazer da consulta do banco.    
+    with borda[1].container(border=True):        
+        st.markdown(f"#### {i+inicio+1}° - {nome}") 
         st.write(f"##### - **Nota:** {nota}")
         st.write(f"##### - {extra_info}")
-        st.image(poster, caption=nome)
+        st.image(poster, caption=nome,use_container_width=True)
 
     st.write('')
 
