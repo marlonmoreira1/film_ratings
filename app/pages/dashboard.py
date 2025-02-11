@@ -9,7 +9,7 @@ from sqlalchemy.exc import OperationalError
 import urllib.parse
 from collect_data import get_data
 from queries import QUERY_FILMES, QUERY_SERIES
-from dotenv import load_dotenv
+
 
 st.set_page_config(page_title='Filmes',layout='wide')
 
@@ -24,12 +24,11 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-load_dotenv()
 
-SERVER = os.environ["SERVER"]
-DATABASE = os.environ["DATABASE"]
-UID = os.environ["UID"]
-PWD = os.environ["PWD"]
+SERVER = st.secrets["SERVER"]
+DATABASE = st.secrets["DATABASE"]
+UID = st.secrets["UID"]
+PWD = st.secrets["PWD"]
 
 filmes = get_data(
                 QUERY_FILMES,
@@ -46,9 +45,6 @@ series = get_data(QUERY_SERIES,
                 UID,
                 PWD
                 )
-
-st.write(f"##### Fontes dos Dados")
-st.markdown(get_carousel(), unsafe_allow_html=True)
 
 
 colunas_correspondentes = {
@@ -73,31 +69,36 @@ dados = dados[dados['streaming'].isin(['Amazon Prime Video',
                                         'Apple TV Plus','Max','Netflix',
                                         'Paramount Plus','Disney Plus'])]
 
-dados = dados.groupby(["data", "streaming"], as_index=False)["nota_score"].mean().round(1)
+
+dados["data"] = pd.to_datetime(dados["data"])
+
+dados['media_movel'] = dados.groupby('streaming')['nota_score'].transform(
+        lambda x: x.rolling(window=7, min_periods=1).mean()
+    )
+
+dados = dados.groupby(["data", "streaming"], as_index=False)["media_movel"].mean().round(1)
 
 fig = px.line(
     dados, 
     x="data", 
-    y="nota_score", 
+    y="media_movel", 
     color="streaming", 
-    markers=True, 
-    title='Percepção das Plataformas ao longo do tempo.'      
+    markers=True         
 )
 
-fig.update_traces(textposition="top right")  
-
-
-for trace in fig.data:
-    trace.showlegend = False  
-    x_final = trace.x[-1]  
-    y_final = trace.y[-1]  
-    fig.add_annotation(
-        x=x_final, 
-        y=y_final, 
-        text=trace.name, 
-        showarrow=False, 
-        font=dict(size=12, color=trace.line.color),  
-        xshift=25  
+fig.update_layout(
+    legend=dict(
+        orientation="h",  
+        yanchor="bottom",
+        y=1.02,  
+        xanchor="right",
+        x=0.8
     )
+)
 
+st.markdown("<h5 style='text-align: center;'>Percepção das Plataformas ao Longo do Tempo</h5>", unsafe_allow_html=True)
 st.plotly_chart(fig, use_container_width=True)
+
+
+st.markdown("<h5 style='text-align: center;'>Fontes dos Dados</h5>", unsafe_allow_html=True)
+st.markdown(get_carousel("100%","125px","-3%","2.5%"), unsafe_allow_html=True)

@@ -11,7 +11,7 @@ from sqlalchemy.exc import OperationalError
 import urllib.parse
 from collect_data import get_data
 from queries import QUERY_FILMES, QUERY_SERIES
-from dotenv import load_dotenv
+
 
 st.set_page_config(page_title='Filmes',layout='centered')
 
@@ -27,12 +27,28 @@ st.markdown("""
         """, unsafe_allow_html=True)
 
 
-load_dotenv()
+with st.expander("Sobre o App"):
+    st.write("""
+    **Bem-vindo ao seu novo aliado para encontrar aquele filme ou série legal!** 🎬🍿
 
-SERVER = os.environ["SERVER"]
-DATABASE = os.environ["DATABASE"]
-UID = os.environ["UID"]
-PWD = os.environ["PWD"]
+    A ideia é simples:
+
+    Através de dados coletados de várias plataformas de avaliação de filmes e séries como IMDb, Rotten Tomatoes, The Movie Database (TMDb), AdoroCinema, Filmow, Trakt e Letterboxd — considerando somente a avaliação de usuários (e não de críticos) — o app oferece sugestões do que assistir com base na média dessas avaliações. 
+
+    A média dessas notas ajuda a descobrir o que está em alta, com a perspectiva de muitas pessoas de diferentes perfis. Aqui, você pode encontrar as melhores opções de filmes e séries, com base em dados reais de usuários, para acertar na escolha e não perder tempo navegando sem fim em várias plataformas diferentes buscando o que assistir.
+
+    Além de destacar o que está em alta, o app também ajuda a descobrir **filmes e séries que talvez não estivessem no seu radar**, ampliando suas opções e trazendo boas surpresas.
+
+    **Em resumo:** O objetivo é usar dados para encontrar boas opções de entretenimento, evitar a frustração de indecisão e dar sugestões valiosas sobre o que está bombando no momento! 🎥
+
+    🎬 **Boa escolha e boa sessão! Obrigado por visitar o app!** 🍿
+    """)
+
+
+SERVER = st.secrets["SERVER"]
+DATABASE = st.secrets["DATABASE"]
+UID = st.secrets["UID"]
+PWD = st.secrets["PWD"]
 
 filmes = get_data(
                 QUERY_FILMES,
@@ -50,8 +66,8 @@ series = get_data(QUERY_SERIES,
                 PWD
                 )
 
-st.write(f"##### Fontes dos Dados")
-st.markdown(get_carousel(), unsafe_allow_html=True)
+st.markdown("<h5 style='text-align: center;'>Fontes dos Dados</h5>", unsafe_allow_html=True)
+st.markdown(get_carousel("90%","80px","-17%","2.5%"), unsafe_allow_html=True)
 
 colunas_correspondentes = {
     "serie_id": "movie_id",
@@ -161,17 +177,20 @@ for i, filme in enumerate(filmes_pagina):
 
     st.write('')
 
-pagina_atual = st.number_input(
-    "Página",
-    min_value=1,
-    max_value=total_paginas,
-    step=1,
-    value=st.session_state.pagina_atual
-)
+try:
+    pagina_atual = st.number_input(
+        "Página",
+        min_value=1,
+        max_value=total_paginas,
+        step=1,
+        value=st.session_state.pagina_atual
+    )
 
 
-if pagina_atual != st.session_state.pagina_atual:
-    st.session_state.pagina_atual = pagina_atual     
-    st.rerun()
+    if pagina_atual != st.session_state.pagina_atual:
+        st.session_state.pagina_atual = pagina_atual     
+        st.rerun()
         
-    
+except st.errors.StreamlitValueAboveMaxError:
+    st.session_state.pagina_atual = 1
+    st.rerun()

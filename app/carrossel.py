@@ -1,29 +1,30 @@
-def get_carousel():
-    carousel_html = """
+def get_carousel(width_perc, width_px, left, right):
+    carousel_html = f"""
     <style>
-        .carousel-container {
-            width: 100%;
+        .carousel-container {{
+            width: {width_perc};
             overflow: hidden;
             position: relative;
             background-color: #000;
             padding: 10px 0;
             margin: 0 auto;
-        }
-        .carousel-slide {
+        }}
+        .carousel-slide {{
             display: flex;
             width: 200%;
             animation: slide 10s linear infinite;
-        }
-        .carousel-slide img {
-            width: 100px;
+        }}
+        .carousel-slide img {{
+            width: {width_px};
             height: auto;
             margin: 0 15px;
-        }
-        @keyframes slide {
-            0% { transform: translateX(0%); }
-            50% { transform: translateX(-30%); }
-            100% { transform: translateX(0%); }
-        }
+        }}
+        @keyframes slide {{
+            0% {{ transform: translateX(0%); }}
+            20% {{ transform: translateX({left}); }}  /* Menos para a esquerda */
+            75% {{ transform: translateX({right}); }}   /* Mais para a direita */
+            100% {{ transform: translateX(0%); }}
+        }}
     </style>
 
     <div class="carousel-container">
