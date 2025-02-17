@@ -58,7 +58,7 @@ WITH dados AS (
         ON s.streaming = f.streaming
         AND s.data = f.data
     WHERE
-       data IS NOT NULL
+       s.data IS NOT NULL
 
 )
 
