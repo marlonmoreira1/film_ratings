@@ -30,8 +30,8 @@ DATABASE = st.secrets["DATABASE"]
 UID = st.secrets["UID"]
 PWD = st.secrets["PWD"]
 
-filmes = get_data(
-                QUERY_FILMES,
+dados = get_data(
+                QUERY_DASH,
                 SERVER,
                 DATABASE,
                 UID,
@@ -39,49 +39,17 @@ filmes = get_data(
                 )
 
 
-series = get_data(QUERY_SERIES,
-                SERVER,
-                DATABASE,
-                UID,
-                PWD
-                )
-
-
-colunas_correspondentes = {
-    "serie_id": "movie_id",
-    "nome_serie": "nome_filme",
-    "serie_original": "movie_original",
-    "nome_series_en": "nome_filmes_en",
-    "serie_type": "film_type"
-}
-
-series = series.rename(columns=colunas_correspondentes)
-
-dados = pd.concat([filmes,series])
-
-dados = dados.sort_values(by="nota_score", ascending=False)
-
-dados["nota_score"] = dados["nota_score"].astype(str).str.replace(',', '.').astype(float)
-
-dados = dados[dados['film_type']=='Streaming']
 
 dados = dados[dados['streaming'].isin(['Amazon Prime Video',
                                         'Apple TV Plus','Max','Netflix',
                                         'Paramount Plus','Disney Plus'])]
 
 
-dados["data"] = pd.to_datetime(dados["data"])
-
-dados['media_movel'] = dados.groupby('streaming')['nota_score'].transform(
-        lambda x: x.rolling(window=7, min_periods=1).mean()
-    )
-
-dados = dados.groupby(["data", "streaming"], as_index=False)["media_movel"].mean().round(1)
 
 fig = px.line(
     dados, 
     x="data", 
-    y="media_movel", 
+    y="Media", 
     color="streaming", 
     markers=True         
 )

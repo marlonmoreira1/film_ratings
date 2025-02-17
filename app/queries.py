@@ -39,3 +39,36 @@ WHERE
 ranking = 1
 ORDER BY nota_score DESC;
 """
+
+
+QUERY_DASH = """
+WITH dados AS (
+    SELECT
+        COALESCE(s.streaming, f.streaming) AS streaming,
+        COALESCE(s.data, f.data) AS data,
+        CASE 
+            WHEN s.nota_score IS NOT NULL AND f.nota_score IS NOT NULL THEN (s.nota_score + f.nota_score) / 2
+            WHEN s.nota_score IS NOT NULL THEN s.nota_score
+            WHEN f.nota_score IS NOT NULL THEN f.nota_score
+            ELSE NULL
+        END AS nota
+    FROM
+        [dbo].[Notas_Series] s
+    FULL OUTER JOIN [dbo].[Notas_Filmes] f 
+        ON s.streaming = f.streaming
+        AND s.data = f.data
+    WHERE
+       data IS NOT NULL
+
+)
+
+SELECT
+    streaming,
+    data,
+    ROUND(AVG(nota), 1) AS Media
+FROM 
+    dados
+GROUP BY 
+    data, streaming
+ORDER BY 1,2;
+"""
