@@ -8,7 +8,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.exc import OperationalError
 import urllib.parse
 from collect_data import get_data
-from queries import QUERY_FILMES, QUERY_SERIES
+from queries import QUERY_FILMES, QUERY_SERIES, QUERY_DASH
 
 
 st.set_page_config(page_title='Filmes',layout='wide')
