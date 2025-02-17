@@ -33,7 +33,7 @@ with st.expander("Sobre o App"):
 
     A ideia é simples:
 
-    Através de dados coletados de várias plataformas de avaliação de filmes e séries como IMDb, Rotten Tomatoes, The Movie Database (TMDb), AdoroCinema, Filmow, Trakt e Letterboxd — considerando somente a avaliação de usuários (e não de críticos) — o app oferece sugestões do que assistir com base na média dessas avaliações.  Apenas filmes e séries atuais, que estão em exibição dentro de uma janela de 15 dias, são considerados.
+    Através de dados coletados de várias plataformas de avaliação de filmes e séries como IMDb, Rotten Tomatoes, The Movie Database (TMDb), AdoroCinema, Filmow, Trakt e Letterboxd — considerando somente a avaliação de usuários (e não de críticos) — o app oferece sugestões do que assistir com base na média dessas avaliações. Apenas filmes e séries atuais que estão em exibição dentro de uma janela de 15 dias são considerados.
 
     A média dessas notas ajuda a descobrir o que está em alta, com a perspectiva de muitas pessoas de diferentes perfis. Aqui, você pode encontrar as melhores opções de filmes e séries, com base em dados reais de usuários, para acertar na escolha e não perder tempo navegando sem fim em várias plataformas diferentes buscando o que assistir.
 
