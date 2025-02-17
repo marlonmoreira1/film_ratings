@@ -101,4 +101,4 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 st.markdown("<h5 style='text-align: center;'>Fontes dos Dados</h5>", unsafe_allow_html=True)
-st.markdown(get_carousel("100%","125px","-3%","2.5%"), unsafe_allow_html=True)
+st.markdown(get_carousel("150%","125px","-3%","2.5%"), unsafe_allow_html=True)
