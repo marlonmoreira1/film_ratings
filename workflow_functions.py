@@ -39,7 +39,7 @@ data_ontem = data_inicio.strftime('%Y-%m-%d')
 
 
 @flow(name="WorkFlow dos Filmes.")
-def movies_flow():
+def movies_flow(timeout_seconds=1800):
     
     end_point_cinema = "discover/movie"
     end_point_streaming = "movie/now_playing"
@@ -133,7 +133,7 @@ def movies_flow():
 
 
 @flow(name="WorkFlow das Series.")
-def series_flow():    
+def series_flow(timeout_seconds=1800):    
     
     end_point_streaming = "tv/on_the_air"
     tipo = "tv"
