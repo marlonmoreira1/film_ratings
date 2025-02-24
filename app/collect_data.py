@@ -6,26 +6,29 @@ import pymssql
 import pandas as pd
 import requests
 import time
+import logging
 import streamlit as st
 
 @st.cache_data(ttl=86400,show_spinner=False)
-def get_data(query, server, database, uid, pwd):    
+def get_data(query, server, database, uid, pwd):
+    logging.info("Iniciando a consulta ao banco de dados.")   
     connection_string = f"mssql+pymssql://{uid}:{pwd}@{server}/{database}"     
     for attempt in range(1, 7):
         try:
+            logging.info(f"Tentando conexão (tentativa {attempt}/7)...")
             engine = create_engine(connection_string) 
             with engine.connect() as connection:
-                df = pd.read_sql(query, connection)                        
+                df = pd.read_sql(query, connection)
+            logging.info("Consulta bem-sucedida. Dados carregados.")                        
             return df  
 
         except OperationalError as e:
-            print(f"Tentativa {attempt}/7 falhou. Erro: {e}")
+            logging.error(f"Tentativa {attempt}/7 falhou. Erro: {e}")            
             
-            if attempt < 6:
-                print(f"Aguardando 10 segundos antes de tentar novamente...")
+            if attempt < 6:                
                 time.sleep(10)
             else:
-                print("Máximo de tentativas atingido. Falha ao conectar ao banco de dados.")
+                logging.error("Máximo de tentativas atingido. Falha ao conectar ao banco de dados.")               
                 raise
 
 

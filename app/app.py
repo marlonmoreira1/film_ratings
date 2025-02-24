@@ -41,7 +41,7 @@ with st.expander("Sobre o App"):
 
     **Em resumo:** O objetivo é usar dados para encontrar boas opções de entretenimento, evitar a frustração de indecisão e dar sugestões valiosas sobre o que está bombando no momento! 🎥
 
-    🎬 **Boa escolha e boa sessão! Obrigado por visitar o app!** 🍿
+    🎬 **Boa escolha e boa sessão! Obrigado por visitar o Watch Finder!** 🍿
     """)
 
 
