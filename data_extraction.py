@@ -437,7 +437,11 @@ def load_data(df, name_table, server, database, uid, pwd):
     
     engine = create_engine(connection_string)
 
-    print("Conexão bem-sucedida!")      
+    print("Conexão bem-sucedida!")
+
+    if name_table == "Notas_Series":        
+        df = df.drop('streaming_trakt', axis=1)
+       
 
     column_mappings = {
         "Notas_Filmes": {
@@ -485,6 +489,7 @@ def load_data(df, name_table, server, database, uid, pwd):
         }
     }
 
+    
     if name_table in column_mappings:        
         df = df.rename(columns=column_mappings[name_table])        
 
