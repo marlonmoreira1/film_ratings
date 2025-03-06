@@ -1,5 +1,5 @@
 from data_extraction import fetch_imdb_rating, extract_movies_data, extrair_filmes_e_notas, extrair_dados_adorocinema, extrair_filmes_letterboxd, extrair_dados_trakt, discover_movies, now_playing_movies, fetch_movie_details_by_name,load_data 
-from processor import get_imdb_name, concat_rt, concat_filmow, join_omdbdfs, merge_dfs, printar_filmes, filter_processing_final_df, merge_new_movies, print_film, join_omdbdfs_series,weekly_filter,replace_rt
+from processor import get_imdb_name, concat_rt, concat_filmow, join_omdbdfs, merge_dfs, printar_filmes, filter_processing_final_df, merge_new_movies, print_film, join_omdbdfs_series, weekly_filter, replace_rt, get_streamings
 import pandas as pd
 import re
 import random
@@ -139,7 +139,7 @@ def series_flow(timeout_seconds=1800):
     tipo = "tv"
 
     filter_columns = ['movie_id','nome_filme', 'movie_original', 'nome_filmes_en', 'data_lancamento_omdb',
-       'poster', 'nota_omdb', 'nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',       
+       'poster', 'streaming_trakt', 'nota_omdb', 'nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',       
        'nota_filmow', 'nota_rottentomatoes','nota_trakt']
 
     columns_to_convert = ['nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',
@@ -203,10 +203,12 @@ def series_flow(timeout_seconds=1800):
 
     movies_df = fetch_movie_details_by_name(filmes,API_KEY,base_url,tipo)    
 
-    new_filmes = merge_new_movies(filmes,movies_df)       
+    new_filmes = merge_new_movies(filmes,movies_df)
+
+    final_filmes = new_filmes.apply(get_streamings,axis=1)      
 
     load_data(
-            new_filmes,
+            final_filmes,
             'Notas_Series',
             SERVER,
             DATABASE,

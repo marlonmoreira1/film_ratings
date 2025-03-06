@@ -297,7 +297,8 @@ def extrair_dados_trakt(url,movie_slugs, client_id):
                 "filmes": movie_data["title"],
                 "nota_trakt": movie_data.get("rating", "N/A"),
                 "genres": ", ".join(movie_data.get("genres", "N/A")),
-                "certification": movie_data.get("certification", "N/A")
+                "certification": movie_data.get("certification", "N/A"),
+                "streaming_trakt": movie_data.get("network", "N/A")
             })
         else:
             pass
