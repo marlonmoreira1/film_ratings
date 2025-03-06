@@ -264,3 +264,13 @@ def merge_new_movies(filmes,movies_df):
 def printar_filmes(df_final):
     df_columns = df_final.columns
     print(df_columns)
+
+
+@task(retries=5, retry_delay_seconds=15)
+def get_streamings(row):
+
+    if row['streaming'] == 'N/A':
+        return row['streaming_trakt']
+    return row['streaming']
+    
+    
