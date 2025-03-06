@@ -266,7 +266,6 @@ def printar_filmes(df_final):
     print(df_columns)
 
 
-@task(retries=5, retry_delay_seconds=15)
 def get_streamings(row):
 
     if row['streaming'] == 'N/A':
