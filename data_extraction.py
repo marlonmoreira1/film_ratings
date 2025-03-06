@@ -440,7 +440,7 @@ def load_data(df, name_table, server, database, uid, pwd):
     print("Conexão bem-sucedida!")
 
     if name_table == "Notas_Series":        
-        df = df.drop('streaming_trakt', axis=1)
+        df = df.drop('streaming_trakt')
        
 
     column_mappings = {

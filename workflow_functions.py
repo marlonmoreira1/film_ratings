@@ -205,7 +205,7 @@ def series_flow(timeout_seconds=1800):
 
     new_filmes = merge_new_movies(filmes,movies_df)
 
-    final_filmes = new_filmes.apply(get_streamings,axis=1)         
+    final_filmes['streaming'] = new_filmes.apply(get_streamings,axis=1)         
 
     load_data(
             final_filmes,
