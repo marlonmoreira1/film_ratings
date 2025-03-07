@@ -109,10 +109,18 @@ dados["nota_score"] = dados["nota_score"].astype(str).str.replace(',', '.').asty
 
 def changetype(row):
     if row['film_type'] != "N/A":
-        return "streaming"
+        return "Streaming"
     return row['film_type']
 
+def update_streaming(row):
+    if row['streaming'] == 'Apple TV+':
+        return 'Apple TV Plus'
+    elif row['streaming'] == 'Disney+':
+        return 'Disney Plus'
+    return row['streaming']
+
 dados['film_type'] = dados.apply(changetype,axis=1)
+dados['streaming'] = dados.apply(update_streaming,axis=1)
 
 tipo_colunas = st.columns([0.9,1,1])
 
@@ -137,7 +145,8 @@ lista_streamings = [
     "Paramount Plus",
     "Paramount+ Amazon Channel",
     "Globoplay",
-    "Crunchyroll"
+    "Crunchyroll",
+    "Youtube"
 ]
 
 if tipo_filtro:
