@@ -119,7 +119,7 @@ lista_streamings = [
     "Paramount+ Amazon Channel",
     "Globoplay",
     "Crunchyroll",
-    "Youtube",
+    "YouTube",
     "Looke"
 ]
 
