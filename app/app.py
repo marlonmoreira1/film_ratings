@@ -119,18 +119,42 @@ with tipo_colunas[1]:
 
 st.write('')
 
+lista_streamings = [
+    "Disney Plus",
+    "Amazon Prime Video",
+    "Apple TV Plus",
+    "Claro tv+",
+    "Max",
+    "Netflix",
+    "Univer Video",
+    "Paramount Plus",
+    "Paramount+ Amazon Channel",
+    "Globoplay",
+    "Crunchyroll"
+]
+
+def create_type(row):
+    if row['streaming'] in lista_streamings:
+        return 'Streaming'
+    return 'TV'
+
+dados['type_project'] = dados.apply(create_type,axis=1)
+
+if filtro == 'Filmes':
+    dados['type_project'] = dados['type_project'].replace('TV','Cinema')
+
 if tipo_filtro:
     dados = dados[dados['film_type']==tipo_filtro]
 
-if tipo_filtro == 'Streaming':
-    plataformas = st.radio(
-                    "",
-                    dados[~dados['streaming'].isna()]['streaming'].unique(),
-                    index=None,
-                    horizontal=True
-                        )
-    if plataformas:
-        dados = dados[dados['streaming']==plataformas]
+
+plataformas = st.radio(
+                "",
+                dados[dados['type_project']==tipo_filtro]['streaming'].unique(),
+                index=None,
+                horizontal=True
+                    )
+if plataformas:
+    dados = dados[dados['streaming']==plataformas]
         
 
 filmes_por_pagina = 10  
