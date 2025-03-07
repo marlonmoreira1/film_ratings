@@ -107,33 +107,6 @@ dados = dados.sort_values(by="nota_score", ascending=False)
 
 dados["nota_score"] = dados["nota_score"].astype(str).str.replace(',', '.').astype(float).round(1)
 
-def changetype(row):
-    if row['streaming'] != "N/A":
-        return "Streaming"
-    return row['film_type']
-
-def update_streaming(row):
-    if row['streaming'] == 'Apple TV+':
-        return 'Apple TV Plus'
-    elif row['streaming'] == 'Disney+':
-        return 'Disney Plus'
-    return row['streaming']
-
-dados['film_type'] = dados.apply(changetype,axis=1)
-dados['streaming'] = dados.apply(update_streaming,axis=1)
-
-tipo_colunas = st.columns([0.9,1,1])
-
-with tipo_colunas[1]:
-    tipo_filtro = st.segmented_control(
-        "",
-        options=dados['film_type'].unique(),
-        selection_mode="single",
-        default=None
-    )
-
-st.write('')
-
 lista_streamings = [
     "Disney Plus",
     "Amazon Prime Video",
@@ -146,8 +119,36 @@ lista_streamings = [
     "Paramount+ Amazon Channel",
     "Globoplay",
     "Crunchyroll",
-    "Youtube"
+    "Youtube",
+    "Looke"
 ]
+
+def changetype(row):
+    if row['streaming'] in lista_streamings:
+        return "Streaming"
+    return row['film_type']
+
+def update_streaming(row):
+    if row['streaming'] == 'Apple TV+':
+        return 'Apple TV Plus'
+    elif row['streaming'] == 'Disney+':
+        return 'Disney Plus'
+    return row['streaming']
+
+dados['streaming'] = dados.apply(update_streaming,axis=1)
+dados['film_type'] = dados.apply(changetype,axis=1)
+
+tipo_colunas = st.columns([0.9,1,1])
+
+with tipo_colunas[1]:
+    tipo_filtro = st.segmented_control(
+        "",
+        options=dados['film_type'].unique(),
+        selection_mode="single",
+        default=None
+    )
+
+st.write('')
 
 if tipo_filtro:
     dados = dados[dados['film_type']==tipo_filtro]
