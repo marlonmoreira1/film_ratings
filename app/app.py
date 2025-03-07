@@ -147,14 +147,14 @@ if tipo_filtro:
     dados = dados[dados['film_type']==tipo_filtro]
 
 
-plataformas = st.radio(
-                "",
-                dados[dados['type_project']==tipo_filtro]['streaming'].unique(),
-                index=None,
-                horizontal=True
-                    )
-if plataformas:
-    dados = dados[dados['streaming']==plataformas]
+    plataformas = st.radio(
+                    "",
+                    dados[dados['type_project']==tipo_filtro]['streaming'].unique(),
+                    index=None,
+                    horizontal=True
+                        )
+    if plataformas:
+        dados = dados[dados['streaming']==plataformas]
         
 
 filmes_por_pagina = 10  
