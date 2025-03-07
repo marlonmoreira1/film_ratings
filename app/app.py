@@ -133,23 +133,15 @@ lista_streamings = [
     "Crunchyroll"
 ]
 
-def create_type(row):
-    if row['streaming'] in lista_streamings:
-        return 'Streaming'
-    return 'TV'
-
-dados['type_project'] = dados.apply(create_type,axis=1)
-
-if filtro == 'Filmes':
-    dados['type_project'] = dados['type_project'].replace('TV','Cinema')
-
 if tipo_filtro:
     dados = dados[dados['film_type']==tipo_filtro]
 
-
+if tipo_filtro == 'Streaming':
     plataformas = st.radio(
                     "",
-                    dados[dados['type_project']==tipo_filtro]['streaming'].unique(),
+                    dados[(~dados['streaming'].isna())&\
+                    (dados['streaming'].isin(lista_streamings))]\
+                    ['streaming'].unique(),
                     index=None,
                     horizontal=True
                         )
