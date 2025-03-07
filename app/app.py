@@ -12,7 +12,6 @@ import urllib.parse
 from collect_data import get_data
 from queries import QUERY_FILMES, QUERY_SERIES
 
-
 st.set_page_config(page_title='Filmes',layout='centered')
 
 st.markdown("""
