@@ -108,7 +108,7 @@ dados = dados.sort_values(by="nota_score", ascending=False)
 dados["nota_score"] = dados["nota_score"].astype(str).str.replace(',', '.').astype(float).round(1)
 
 def changetype(row):
-    if row['film_type'] != "N/A":
+    if row['streaming'] != "N/A":
         return "Streaming"
     return row['film_type']
 
