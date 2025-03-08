@@ -191,7 +191,7 @@ for i, filme in enumerate(filmes_pagina):
     filme = dados[dados["nome_filme"] == filme].iloc[0]
     nome = filme["nome_filme"]
     poster = filme["poster"]
-    nota = filme["nota_score"]
+    nota = filme["nota_score"].fillna(0)
     ranking = filme["posicao"]
     if filme["film_type"] == 'Streaming':
         streaming = filme["streaming"]
