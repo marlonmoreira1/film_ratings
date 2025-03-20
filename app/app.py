@@ -205,7 +205,10 @@ for i, filme in enumerate(filmes_pagina):
         st.markdown(f"#### {i+inicio+1}° - {nome}") 
         st.write(f"##### - **Nota:** {nota}")
         st.write(f"##### - {extra_info}")
-        st.image(poster, caption=nome,use_container_width=True)
+        if poster:
+            st.image(poster, caption=nome,use_container_width=True)
+        else:
+            st.write("_Sem imagem disponível_")
 
     st.write('')
 
