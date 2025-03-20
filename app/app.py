@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import time
+from datetime import datetime
 import os
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
@@ -229,3 +230,8 @@ try:
 except st.errors.StreamlitValueAboveMaxError:
     st.session_state.pagina_atual = 1
     st.rerun()
+
+
+hora_atual = datetime.now().hour - 3
+
+st.write(hora_atual)
