@@ -222,6 +222,10 @@ try:
         value=st.session_state.pagina_atual
     )
 
+    hora_atual = datetime.now().hour - 3
+
+    st.write(hora_atual)
+
 
     if pagina_atual != st.session_state.pagina_atual:
         st.session_state.pagina_atual = pagina_atual     
@@ -230,8 +234,3 @@ try:
 except st.errors.StreamlitValueAboveMaxError:
     st.session_state.pagina_atual = 1
     st.rerun()
-
-
-hora_atual = datetime.now().hour - 3
-
-st.write(hora_atual)
