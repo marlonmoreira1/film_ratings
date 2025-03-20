@@ -224,8 +224,8 @@ try:
 
     hora_atual = datetime.now().hour - 3
 
-    st.write(hora_atual)
-
+    if hora_atual == 0:
+        st.cache_data.clear()
 
     if pagina_atual != st.session_state.pagina_atual:
         st.session_state.pagina_atual = pagina_atual     
