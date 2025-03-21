@@ -225,7 +225,7 @@ try:
     hora_atual = datetime.now().hour - 3
     minuto_atual = datetime.now().minute
 
-    if hora_atual == 0 and (minuto_atual > 41 and minuto_atual <= 45):
+    if hora_atual == 0 and (minuto_atual > 44 and minuto_atual <= 45):
         st.cache_data.clear()
 
     if pagina_atual != st.session_state.pagina_atual:
