@@ -135,7 +135,7 @@ def movies_flow(timeout_seconds=1800):
 @flow(name="WorkFlow das Series.")
 def series_flow(timeout_seconds=1800):    
     
-    end_point_streaming = "tv/on_the_air"
+    end_point_streaming = "tv/popular"
     tipo = "tv"
 
     filter_columns = ['movie_id','nome_filme', 'movie_original', 'nome_filmes_en', 'data_lancamento_omdb',
