@@ -410,7 +410,8 @@ def now_playing_series(language,start_date,end_date,API_KEY,base_url,end_point,n
                     "movie_id": movie.get('id'),
                     "movies": movie.get(name),
                     "movie_original": movie.get(original_name),
-                    "nota_omdb": movie.get('vote_average'),                                       
+                    "nota_omdb": movie.get('vote_average'),
+                    "data_lancamento": movie.get('first_air_date'),                                      
                     "poster": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}" if movie.get('poster_path') else None
                 } for movie in movies['results']])
             else:
