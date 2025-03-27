@@ -354,7 +354,7 @@ def now_playing_movies(language,API_KEY,base_url,end_point,name,original_name, r
     
     for page in range(1, max_pages + 1):  
         params = {
-            "api_key": API_KEY,
+            "api_key": API_KEY,            
             "language": language,
             "region": region,
             "page": page,  
@@ -384,6 +384,43 @@ def now_playing_movies(language,API_KEY,base_url,end_point,name,original_name, r
     return pd.DataFrame(all_movies)
 
 
+@task(retries=5, retry_delay_seconds=15)
+def now_playing_series(language,start_date,end_date,API_KEY,base_url,end_point,name,original_name, region="BR", max_pages=16):
+    
+    now_playing_url = f"{base_url}/{end_point}"
+    all_movies = []
+    
+    for page in range(1, max_pages + 1):  
+        params = {
+            "api_key": API_KEY,
+            "air_date.gte": start_date,
+            "air_date.lte": end_date,            
+            "language": language,
+            "watch_region": region,
+            "page": page,  
+        }
+        response = requests.get(now_playing_url, params=params)
+        
+        if response.status_code == 200:
+            movies = response.json()
+            
+            
+            if movies and movies['results']:
+                all_movies.extend([{
+                    "movie_id": movie.get('id'),
+                    "movies": movie.get(name),
+                    "movie_original": movie.get(original_name),
+                    "nota_omdb": movie.get('vote_average'),                                       
+                    "poster": f"https://image.tmdb.org/t/p/w500{movie.get('poster_path')}" if movie.get('poster_path') else None
+                } for movie in movies['results']])
+            else:
+                break  
+        else:
+            print(f"Erro: {response.status_code}, {response.json()}")
+            break
+    
+    
+    return pd.DataFrame(all_movies)
 
 
 @task(retries=5, retry_delay_seconds=15)

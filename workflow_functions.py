@@ -1,4 +1,4 @@
-from data_extraction import fetch_imdb_rating, extract_movies_data, extrair_filmes_e_notas, extrair_dados_adorocinema, extrair_filmes_letterboxd, extrair_dados_trakt, discover_movies, now_playing_movies, fetch_movie_details_by_name,load_data 
+from data_extraction import fetch_imdb_rating, extract_movies_data, extrair_filmes_e_notas, extrair_dados_adorocinema, extrair_filmes_letterboxd, extrair_dados_trakt, discover_movies, now_playing_movies, fetch_movie_details_by_name,load_data, now_playing_series 
 from processor import get_imdb_name, concat_rt, concat_filmow, join_omdbdfs, merge_dfs, printar_filmes, filter_processing_final_df, merge_new_movies, print_film, join_omdbdfs_series, weekly_filter, replace_rt, get_streamings
 import pandas as pd
 import re
@@ -135,7 +135,7 @@ def movies_flow(timeout_seconds=1800):
 @flow(name="WorkFlow das Series.")
 def series_flow(timeout_seconds=1800):    
     
-    end_point_streaming = "tv/popular"
+    end_point_streaming = "discover/tv"
     tipo = "tv"
 
     filter_columns = ['movie_id','nome_filme', 'movie_original', 'nome_filmes_en', 'data_lancamento_omdb',
@@ -171,8 +171,8 @@ def series_flow(timeout_seconds=1800):
     url_adorocinema = "https://www.adorocinema.com/series-tv/"
     df_adorocinema = extrair_dados_adorocinema.submit(url_adorocinema, num_paginas=16)    
 
-    pt_movies_cinema = now_playing_movies.submit(pt,API_KEY,base_url,end_point_streaming,'name','original_name')
-    en_movies_cinema = now_playing_movies.submit(en,API_KEY,base_url,end_point_streaming,'name','original_name')    
+    pt_movies_cinema = now_playing_series.submit(pt,data_ontem,data_hoje,API_KEY,base_url,end_point_streaming,'name','original_name')
+    en_movies_cinema = now_playing_series.submit(en,data_ontem,data_hoje,API_KEY,base_url,end_point_streaming,'name','original_name')    
 
     omdb_df = join_omdbdfs_series.submit(        
         pt_movies_cinema.result(),
