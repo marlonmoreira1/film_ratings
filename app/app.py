@@ -120,7 +120,9 @@ lista_streamings = [
     "Globoplay",
     "Crunchyroll",
     "YouTube",
-    "Looke"
+    "Looke",
+    "discovery+",
+    "MGM+ Apple TV Channel"
 ]
 
 def changetype(row):
@@ -133,6 +135,8 @@ def update_streaming(row):
         return 'Apple TV Plus'
     elif row['streaming'] == 'Disney+':
         return 'Disney Plus'
+    elif row['streaming'] == 'Claro video':
+        return 'Claro tv+'
     return row['streaming']
 
 dados['streaming'] = dados.apply(update_streaming,axis=1)

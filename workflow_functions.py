@@ -1,4 +1,4 @@
-from data_extraction import fetch_imdb_rating, extract_movies_data, extrair_filmes_e_notas, extrair_dados_adorocinema, extrair_filmes_letterboxd, extrair_dados_trakt, discover_movies, now_playing_movies, fetch_movie_details_by_name,load_data, now_playing_series 
+from data_extraction import fetch_imdb_rating, extract_data_rottentomatoes, extrair_dados_filmow, extrair_dados_adorocinema, extrair_filmes_letterboxd, extrair_dados_trakt, discover_movies, now_playing_movies, fetch_movie_details_by_name,load_data, now_playing_series 
 from processor import get_imdb_name, concat_rt, concat_filmow, join_omdbdfs, merge_dfs, printar_filmes, filter_processing_final_df, merge_new_movies, print_film, join_omdbdfs_series, weekly_filter, replace_rt, get_streamings
 import pandas as pd
 import re
@@ -63,16 +63,16 @@ def movies_flow(timeout_seconds=1800):
     url_rt = "https://www.rottentomatoes.com/browse/movies_at_home/sort:newest?page=4"
     url_cinema = "https://www.rottentomatoes.com/browse/movies_in_theaters/sort:newest?page=4"
 
-    df_rt = extract_movies_data.submit(url_rt)
-    df_rt_cinema = extract_movies_data.submit(url_cinema)
+    df_rt = extract_data_rottentomatoes.submit(url_rt)
+    df_rt_cinema = extract_data_rottentomatoes.submit(url_cinema)
     df_rt_final = concat_rt.submit(df_rt.result(),df_rt_cinema.result())
     
 
     url_filmow = "https://filmow.com/filmes-nos-cinemas/?order=newer"
     url_filmow_streaming = "https://filmow.com/filmes-em-dvd/?order=new-release"
 
-    df_filmow = extrair_filmes_e_notas.submit(url_filmow,2)
-    df_filmow_streaming = extrair_filmes_e_notas.submit(url_filmow_streaming,21)
+    df_filmow = extrair_dados_filmow.submit(url_filmow,2)
+    df_filmow_streaming = extrair_dados_filmow.submit(url_filmow_streaming,21)
     df_filmow_final = concat_filmow.submit(df_filmow.result(),df_filmow_streaming.result())
     
 
@@ -160,12 +160,12 @@ def series_flow(timeout_seconds=1800):
 
     url_rt = "https://www.rottentomatoes.com/browse/tv_series_browse/sort:newest?page=10"    
 
-    df_rt = extract_movies_data.submit(url_rt)
+    df_rt = extract_data_rottentomatoes.submit(url_rt)
     df_rt_clean = replace_rt(df_rt.result())  
 
 
     url_filmow = "https://filmow.com/series/?order=best"    
-    df_filmow = extrair_filmes_e_notas.submit(url_filmow,16)
+    df_filmow = extrair_dados_filmow.submit(url_filmow,16)
     
 
     url_adorocinema = "https://www.adorocinema.com/series-tv/"

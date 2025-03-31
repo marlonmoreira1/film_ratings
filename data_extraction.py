@@ -51,7 +51,7 @@ def fetch_imdb_rating(movies, omdb_api_key):
 
 
 @task(retries=5, retry_delay_seconds=15)
-def extract_movies_data(url):   
+def extract_data_rottentomatoes(url):   
     
     response = requests.get(url)
 
@@ -103,7 +103,7 @@ def extract_movies_data(url):
 
 
 @task(retries=5, retry_delay_seconds=15)
-def extrair_filmes_e_notas(url,num_pages):
+def extrair_dados_filmow(url,num_pages):
     
     try:
         
