@@ -130,7 +130,7 @@ def filter_films(df_final,n_count,filter_columns):
 
     df_filtro = df_final[filter_columns]
 
-    df_filtro = df_filtro.replace(['', ' '], np.nan)          
+    df_filtro = df_filtro.applymap(lambda x: np.nan if isinstance(x, str) and x.strip() == '' else x)         
 
     df_filtro['NaN_count'] = df_filtro.isna().sum(axis=1)
 
