@@ -9,7 +9,7 @@ import time
 import logging
 import streamlit as st
 
-@st.cache_data(ttl="1d",show_spinner=False)
+@st.cache_data(ttl=87000,show_spinner=False)
 def get_data(query, server, database, uid, pwd):
     logging.info("Iniciando a consulta ao banco de dados.")   
     connection_string = f"mssql+pymssql://{uid}:{pwd}@{server}/{database}"     
