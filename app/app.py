@@ -111,8 +111,8 @@ lista_streamings = [
     "Disney Plus",
     "Amazon Prime Video",
     "Apple TV Plus",
-    "Claro tv+",
-    "Max",
+    "Claro tv+",    
+    "HBO Max",
     "Netflix",
     "Univer Video",
     "Paramount Plus",
@@ -137,6 +137,8 @@ def update_streaming(row):
         return 'Disney Plus'
     elif row['streaming'] == 'Claro video':
         return 'Claro tv+'
+    elif row['streaming'] == 'Max':
+        return 'HBO Max'
     return row['streaming']
 
 dados['streaming'] = dados.apply(update_streaming,axis=1)
