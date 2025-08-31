@@ -134,7 +134,7 @@ def filter_films(df_final,n_count,filter_columns):
 
     df_filtro['NaN_count'] = df_filtro.isna().sum(axis=1)
 
-    filmes_duplicados = df_filtro[df_filtro['NaN_count']<n_count]
+    filmes_duplicados = df_filtro[df_filtro['NaN_count']<=n_count]
 
     filmes_duplicados = filmes_duplicados.drop_duplicates(subset=['nome_filme', 'movie_original', 'nome_filmes_en'])    
 
@@ -181,7 +181,7 @@ def scale_columns(filmes_atuais,columns_to_multiply,columns_to_divide):
 
 
 def get_median(filmes_atuais,columns_to_score):
-    filmes_atuais['nota_score'] = filmes_atuais[columns_to_score].apply(lambda row: row.dropna().median(), axis=1)
+    filmes_atuais['nota_score'] = filmes_atuais[columns_to_score].apply(lambda row: row.dropna().mean(), axis=1)
     return filmes_atuais
 
 

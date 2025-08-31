@@ -238,20 +238,19 @@ def extrair_filmes_letterboxd():
         for page in range(1, 15):
             
             if page == 1:
-                url_page = 'https://letterboxd.com/films/ajax/popular/this/week/?esiAllowFilters=true'
+                url_page = 'https://letterboxd.com/films/popular/this/week/'
             else:
-                url_page = f'https://letterboxd.com/films/ajax/popular/this/week/page/{page}/?esiAllowFilters=true'
+                url_page = f'https://letterboxd.com/films/popular/this/week/page/{page}/'
             
             
             response = requests.get(url_page)
             soup = BeautifulSoup(response.text, 'html.parser')
             
             
-            for elemento in soup.select('li.listitem'):
+            for elemento in soup.select("li.posteritem"):
                 filme = {
-                    'filmes': elemento.img.get('alt'),                    
-                    'nota_letterbox': elemento.get('data-average-rating')
-                    
+                    "filmes": elemento.select_one("span.frame-title").get_text(strip=True),
+                    "nota_letterbox": elemento.get("data-average-rating")
                 }
                 data.append(filme)
             
@@ -494,8 +493,7 @@ def load_data(df, name_table, server, database, uid, pwd):
             "nota_imdb_en0": "nota_imdb_en",
             "nota_adorocinema": "nota_adorocinema",
             "nota_filmow": "nota_filmow",
-            "nota_rottentomatoes": "nota_rottentomatoes",
-            "nota_letterbox": "nota_letterbox",
+            "nota_rottentomatoes": "nota_rottentomatoes",            
             "nota_trakt": "nota_trakt",
             "NaN_count": "NaN_count",
             "nota_score": "nota_score",

@@ -47,17 +47,17 @@ def movies_flow(timeout_seconds=1800):
 
     filter_columns = ['movie_id','nome_filme', 'movie_original', 'nome_filmes_en', 'data_lancamento_omdb',
        'poster', 'nota_omdb', 'nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',       
-       'nota_filmow', 'nota_rottentomatoes', 'nota_letterbox','nota_trakt']
+       'nota_filmow', 'nota_rottentomatoes', 'nota_trakt']
 
     columns_to_convert = ['nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',
-        'nota_filmow','nota_letterbox','nota_trakt']
+        'nota_filmow','nota_trakt']
 
 
-    columns_to_multiply = ['nota_filmow','nota_adorocinema', 'nota_letterbox']
+    columns_to_multiply = ['nota_filmow','nota_adorocinema']
     columns_to_divide = ['nota_rottentomatoes']
 
     columns_to_score = ['nota_omdb', 'nota_imdb_en0', 'nota_imdb_en0','nota_filmow',
-        'nota_adorocinema', 'nota_rottentomatoes', 'nota_letterbox', 'nota_trakt']    
+        'nota_adorocinema', 'nota_rottentomatoes', 'nota_trakt']    
     
 
     url_rt = "https://www.rottentomatoes.com/browse/movies_at_home/sort:newest?page=4"
@@ -77,9 +77,7 @@ def movies_flow(timeout_seconds=1800):
     
 
     url_adorocinema = "https://www.adorocinema.com/filmes-todos/"
-    df_adorocinema = extrair_dados_adorocinema.submit(url_adorocinema, num_paginas=16)           
-   
-    letterbox_df = extrair_filmes_letterboxd.submit()    
+    df_adorocinema = extrair_dados_adorocinema.submit(url_adorocinema, num_paginas=16)        
 
     en_movies = discover_movies.submit(data_ontem, data_hoje,en,API_KEY,base_url,end_point_cinema)
     pt_movies = discover_movies.submit(data_ontem, data_hoje,pt,API_KEY,base_url,end_point_cinema)
@@ -101,15 +99,17 @@ def movies_flow(timeout_seconds=1800):
     url_base = "https://api.trakt.tv/movies/"
     trakt_df = extrair_dados_trakt.submit(url_base,omdb_df_result,CLIENT_ID)
 
-    pt_dfs = [df_imdb.result(),df_filmow_final.result(),df_adorocinema.result()]
-    en_dfs = [df_imdb.result(),df_rt_final.result(),letterbox_df.result(),trakt_df.result()]
+    pt_dfs = [df_imdb.result(),df_filmow_final.result(),df_adorocinema.result()]    
+    en_dfs = [df_imdb.result(),df_rt_final.result(),trakt_df.result()]
+    for df in en_dfs:
+        print(df.columns)
 
     df_final = merge_dfs(omdb_df_result,pt_dfs,en_dfs)
 
     df_final = weekly_filter(df_final)
 
     filmes = filter_processing_final_df(df_final,
-                                        6,
+                                        3,
                                         filter_columns,
                                         columns_to_convert,
                                         columns_to_multiply,
@@ -193,7 +193,7 @@ def series_flow(timeout_seconds=1800):
     
 
     filmes = filter_processing_final_df(df_final,
-                                        5,
+                                        3,
                                         filter_columns,
                                         columns_to_convert,
                                         columns_to_multiply,
