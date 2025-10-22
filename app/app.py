@@ -213,7 +213,7 @@ for i, filme in enumerate(filmes_pagina):
         st.write(f"##### - **Nota:** {nota}")
         st.write(f"##### - {extra_info}")
         if poster:
-            st.image(poster, caption=nome,use_container_width=True)
+            st.image(poster, caption=nome,, width="stretch")
         else:
             st.write("_Sem imagem disponível_")
 
