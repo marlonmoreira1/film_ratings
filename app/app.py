@@ -107,6 +107,8 @@ dados = dados.sort_values(by="nota_score", ascending=False)
 
 dados["nota_score"] = dados["nota_score"].astype(str).str.replace(',', '.').astype(float).round(1)
 
+dados = dados.drop_duplicates(subset='movie_original')
+
 lista_streamings = [
     "Disney Plus",
     "Amazon Prime Video",

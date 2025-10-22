@@ -214,9 +214,7 @@ def filter_processing_final_df(
 
     filmes = get_median(filmes_atuais,columns_to_score)
 
-    filmes = filmes_atuais.sort_values(by='nota_score', ascending=False)
-
-    filmes = filmes.drop_duplicates(subset='movie_original')
+    filmes = filmes_atuais.sort_values(by='nota_score', ascending=False)    
 
     return filmes
 
