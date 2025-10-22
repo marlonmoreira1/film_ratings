@@ -216,6 +216,8 @@ def filter_processing_final_df(
 
     filmes = filmes_atuais.sort_values(by='nota_score', ascending=False)
 
+    filmes = filmes.drop_duplicates(subset='movie_original')
+
     return filmes
 
 
