@@ -112,7 +112,7 @@ dados = dados.drop_duplicates(subset='movie_original')
 lista_streamings = [
     "Disney Plus",
     "Amazon Prime Video",
-    "Apple TV Plus",
+    "Apple TV",
     "Claro tv+",    
     "HBO Max",
     "Netflix",
