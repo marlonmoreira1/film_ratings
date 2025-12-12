@@ -133,8 +133,8 @@ def changetype(row):
     return row['film_type']
 
 def update_streaming(row):
-    if row['streaming'] == 'Apple TV+':
-        return 'Apple TV Plus'
+    if row['streaming'] == 'Apple TV+' or row['streaming'] == 'Apple TV Plus':
+        return 'Apple TV'
     elif row['streaming'] == 'Disney+':
         return 'Disney Plus'
     elif row['streaming'] == 'Claro video':
