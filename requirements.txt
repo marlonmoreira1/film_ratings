@@ -11,6 +11,7 @@ webdriver_manager
 pymssql
 unidecode
 sqlalchemy
-streamlit
+streamlit==1.42.0
 streamlit-autorefresh
 plotly
+altair<5.0.0
