@@ -159,7 +159,7 @@ def convert_columns(filmes_atuais,columns):
                                 filmes_atuais[col]
                                 .astype(str)
                                 .str.replace(',', '.')  
-                                .apply(lambda x: x if x.replace('.', '', 1).isdigit() else None)                                  
+                                .apply(lambda x: str(x) if pd.notna(x) and str(x).replace('.', '', 1).isdigit() else None)                                  
                             )
 
         filmes_atuais[col] = filmes_atuais[col].astype(float)       
