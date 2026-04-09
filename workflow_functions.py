@@ -188,6 +188,8 @@ def series_flow(timeout_seconds=1800):
 
     pt_dfs = [df_imdb.result(),df_filmow.result(),df_adorocinema.result()]
     en_dfs = [df_imdb.result(),df_rt_clean,trakt_df.result()]
+    for df in en_dfs:
+        print(df.columns)
 
     df_final = merge_dfs(omdb_df_result,pt_dfs,en_dfs)    
     
