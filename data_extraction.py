@@ -38,6 +38,7 @@ def fetch_imdb_rating(movies, omdb_api_key):
     for movie in movies:
         url = f"http://www.omdbapi.com/?apikey={omdb_api_key}&t={movie}"
         response = requests.get(url)
+        time.sleep(1)
         
         if response.status_code == 200:
             response_data = response.json()
