@@ -13,7 +13,7 @@ from sqlalchemy.exc import OperationalError
 import urllib.parse
 import json
 import pymssql
-from prefect import flow, task
+from prefect import flow, task, get_run_logger
 import os
 from prefect.blocks.system import Secret
 import warnings
@@ -133,7 +133,9 @@ def movies_flow(timeout_seconds=1800):
 
 
 @flow(name="WorkFlow das Series.")
-def series_flow(timeout_seconds=1800):    
+def series_flow(timeout_seconds=1800):
+
+    logger = get_run_logger()       
     
     end_point_streaming = "discover/tv"
     tipo = "tv"
@@ -189,7 +191,8 @@ def series_flow(timeout_seconds=1800):
     pt_dfs = [df_imdb.result(),df_filmow.result(),df_adorocinema.result()]
     en_dfs = [df_imdb.result(),df_rt_clean,trakt_df.result()]
     for df in en_dfs:
-        print(df.columns)
+        logger.info(f"Columns: {df.columns.tolist()}")
+        logger.info(f"Sample:\n{df.head(3)}") 
 
     df_final = merge_dfs(omdb_df_result,pt_dfs,en_dfs)    
     
