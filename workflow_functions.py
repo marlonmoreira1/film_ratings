@@ -183,10 +183,10 @@ def series_flow(timeout_seconds=1800):
 
     omdb_df_result = omdb_df.result()
     
-    df_imdb = fetch_imdb_rating.submit(omdb_df_result['movie_original'],API)   
+    df_imdb = fetch_imdb_rating.submit(omdb_df_result['movie_original'],API)
 
     url_base = "https://api.trakt.tv/shows/"
-    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df_result,CLIENT_ID)
+    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df_result,CLIENT_ID)    
 
     pt_dfs = [df_imdb.result(),df_filmow.result(),df_adorocinema.result()]
     en_dfs = [df_imdb.result(),df_rt_clean,trakt_df.result()]

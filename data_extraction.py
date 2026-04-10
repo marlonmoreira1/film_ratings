@@ -290,6 +290,8 @@ def extrair_dados_trakt(url,movie_slugs, client_id):
         url = f"{url_base}{slug}?extended=full"
         response = requests.get(url, headers=headers)
 
+        time.sleep(2)
+
         if response.status_code == 200:
             movie_data = response.json()
             movie_details.append({
