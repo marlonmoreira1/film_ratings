@@ -46,7 +46,7 @@ def fetch_imdb_rating(movies, omdb_api_key):
             imdb_rating = response_data.get('imdbRating', 'vazio')
             if imdb_rating not in ['vazio', 'N/A', None, '']:
                 data.append({"filmes": title, "nota_imdb": imdb_rating})
-        time.sleep(2)          
+        time.sleep(1)          
     
     df = pd.DataFrame(data)    
     return df
@@ -257,7 +257,7 @@ def extrair_filmes_letterboxd():
                 data.append(filme)
             
             
-            time.sleep(2)
+            time.sleep(1)
     
     except Exception as e:
         print(f"Erro durante a extração: {str(e)}")
@@ -292,7 +292,7 @@ def extrair_dados_trakt(url,movie_slugs, client_id):
         url = f"{url_base}{slug}?extended=full"
         response = requests.get(url, headers=headers)
 
-        time.sleep(2)
+        time.sleep(1)
 
         if response.status_code == 200:
             movie_data = response.json()
