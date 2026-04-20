@@ -38,14 +38,15 @@ def fetch_imdb_rating(movies, omdb_api_key):
     for movie in movies:
         url = f"http://www.omdbapi.com/?apikey={omdb_api_key}&t={movie}"
         response = requests.get(url)
-        time.sleep(1)
+        
         
         if response.status_code == 200:
             response_data = response.json()
             title = response_data.get('Title', 'vazio')
             imdb_rating = response_data.get('imdbRating', 'vazio')
             if imdb_rating not in ['vazio', 'N/A', None, '']:
-                data.append({"filmes": title, "nota_imdb": imdb_rating})          
+                data.append({"filmes": title, "nota_imdb": imdb_rating})
+        time.sleep(2)          
     
     df = pd.DataFrame(data)    
     return df
