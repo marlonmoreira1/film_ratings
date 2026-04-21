@@ -56,3 +56,27 @@ deployments:
   - prefect.deployments.steps.git_clone:
       repository: https://github.com/marlonmoreira1/film_ratings.git
       branch: main
+
+
+
+# 👇 NOVO DEPLOYMENT (SÉRIES)
+- name: series
+  version:
+  tags: ["series", "etl"]
+  concurrency_limit:
+  description: Extração e processamento de notas de séries
+  entrypoint: workflow_functions_serie.py:series_flow
+  parameters: {}
+  work_pool:
+    name: ETL_POOL_SERVERLESS
+    work_queue_name:
+    job_variables: {}
+  schedules:
+  - cron: 30 6 * * *
+    timezone: America/Sao_Paulo
+    day_or: true
+    active: true
+  pull:
+  - prefect.deployments.steps.git_clone:
+      repository: https://github.com/marlonmoreira1/film_ratings.git
+      branch: main
