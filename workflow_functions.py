@@ -224,8 +224,8 @@ def series_flow(timeout_seconds=1800):
 
 @flow(name="Main Workflow")
 def main_flow(timeout_seconds=1800):
-    movies_flow()    
     series_flow()
+    movies_flow()    
 
 
 if __name__ == "__main__":
