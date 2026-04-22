@@ -40,6 +40,8 @@ data_ontem = data_inicio.strftime('%Y-%m-%d')
 
 @flow(name="WorkFlow dos Filmes.")
 def movies_flow(timeout_seconds=1800):
+
+    logger = get_run_logger()
     
     end_point_cinema = "discover/movie"
     end_point_streaming = "movie/now_playing"
@@ -102,7 +104,8 @@ def movies_flow(timeout_seconds=1800):
     pt_dfs = [df_imdb.result(),df_filmow_final.result(),df_adorocinema.result()]    
     en_dfs = [df_imdb.result(),df_rt_final.result(),trakt_df.result()]
     for df in en_dfs:
-        print(df.columns)
+        logger.info(f"Columns: {df.columns.tolist()}")
+        logger.info(f"Sample:\n{df.head(3)}") 
 
     df_final = merge_dfs(omdb_df_result,pt_dfs,en_dfs)
 
