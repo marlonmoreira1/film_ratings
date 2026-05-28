@@ -208,7 +208,7 @@ def filter_processing_final_df(
                                                           row['nota_imdb_en0']),
                              axis=1)
 
-    filmes_atuais['nota_rottentomatoes'] = filmes_atuais['nota_rottentomatoes'].str.rstrip('%').astype(float)    
+    filmes_atuais['nota_rottentomatoes'] = pd.to_numeric(filmes_atuais['nota_rottentomatoes'].astype(str).str.rstrip('%'), errors='coerce')    
 
     filmes_atuais =  scale_columns(filmes_atuais,columns_to_multiply,columns_to_divide)    
 
