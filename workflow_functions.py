@@ -97,12 +97,10 @@ def movies_flow(timeout_seconds=1800):
     omdb_df_result = omdb_df.result()
 
     df_imdb = fetch_imdb_rating.submit(omdb_df_result['movie_original'],API)
-
-    url_base = "https://api.trakt.tv/movies/"
-    trakt_df = extrair_dados_trakt.submit(url_base,omdb_df_result,CLIENT_ID)
+    
 
     pt_dfs = [df_imdb.result(),df_filmow_final.result(),df_adorocinema.result()]    
-    en_dfs = [df_imdb.result(),df_rt_final.result(),trakt_df.result()]
+    en_dfs = [df_imdb.result(),df_rt_final.result()]
     for df in en_dfs:
         logger.info(f"Columns: {df.columns.tolist()}")
         logger.info(f"Sample:\n{df.head(3)}") 

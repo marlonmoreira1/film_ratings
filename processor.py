@@ -271,7 +271,7 @@ def printar_filmes(df_final):
 def get_streamings(row):
 
     if row['streaming'] == 'N/A':
-        return row['streaming_trakt']
+        return "N/A"
     return row['streaming']
     
     
