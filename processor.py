@@ -80,6 +80,8 @@ def merge_dfs(omdb_df,pt_dfs,en_dfs):
     df_final = omdb_df    
 
     for df in pt_dfs:
+        if df.empty:            
+            continue
         df['filmes'] = preprocess_text(df['filmes'])
         df_final = pd.merge(
             df_final,
@@ -91,6 +93,8 @@ def merge_dfs(omdb_df,pt_dfs,en_dfs):
         )
 
     for i, df in enumerate(en_dfs):
+        if df.empty:            
+            continue
         df['filmes'] = preprocess_text(df['filmes'])
         df_final = pd.merge(
             df_final,

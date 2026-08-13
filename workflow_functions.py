@@ -52,7 +52,7 @@ def movies_flow(timeout_seconds=1800):
        'nota_filmow', 'nota_rottentomatoes']
 
     columns_to_convert = ['nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',
-        'nota_filmow',]
+        'nota_filmow']
 
 
     columns_to_multiply = ['nota_filmow','nota_adorocinema']
