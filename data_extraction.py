@@ -478,10 +478,7 @@ def load_data(df, name_table, server, database, uid, pwd):
     
     engine = create_engine(connection_string)
 
-    print("Conexão bem-sucedida!")
-
-    if name_table == "Notas_Series":        
-        df = df.drop('streaming_trakt', axis=1)
+    print("Conexão bem-sucedida!")    
        
 
     column_mappings = {
