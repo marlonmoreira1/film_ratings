@@ -49,17 +49,17 @@ def movies_flow(timeout_seconds=1800):
 
     filter_columns = ['movie_id','nome_filme', 'movie_original', 'nome_filmes_en', 'data_lancamento_omdb',
        'poster', 'nota_omdb', 'nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',       
-       'nota_filmow', 'nota_rottentomatoes', 'nota_trakt']
+       'nota_filmow', 'nota_rottentomatoes']
 
     columns_to_convert = ['nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',
-        'nota_filmow','nota_trakt']
+        'nota_filmow',]
 
 
     columns_to_multiply = ['nota_filmow','nota_adorocinema']
     columns_to_divide = ['nota_rottentomatoes']
 
     columns_to_score = ['nota_omdb', 'nota_imdb_en0', 'nota_imdb_en0','nota_filmow',
-        'nota_adorocinema', 'nota_rottentomatoes', 'nota_trakt']    
+        'nota_adorocinema', 'nota_rottentomatoes']    
     
 
     url_rt = "https://www.rottentomatoes.com/browse/movies_at_home/sort:newest?page=4"

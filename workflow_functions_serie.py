@@ -47,18 +47,18 @@ def series_flow(timeout_seconds=1800):
     tipo = "tv"
 
     filter_columns = ['movie_id','nome_filme', 'movie_original', 'nome_filmes_en', 'data_lancamento_omdb',
-       'poster', 'streaming_trakt', 'nota_omdb', 'nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',       
-       'nota_filmow', 'nota_rottentomatoes','nota_trakt']
+       'poster', 'nota_omdb', 'nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',       
+       'nota_filmow', 'nota_rottentomatoes']
 
     columns_to_convert = ['nota_imdb_omdb_en0', 'nota_imdb_en0', 'nota_adorocinema',
-        'nota_filmow','nota_trakt']
+        'nota_filmow',]
 
 
     columns_to_multiply = ['nota_filmow','nota_adorocinema']
     columns_to_divide = ['nota_rottentomatoes']
 
     columns_to_score = ['nota_omdb', 'nota_imdb_en0', 'nota_imdb_en0','nota_filmow',
-        'nota_adorocinema', 'nota_rottentomatoes', 'nota_trakt']
+        'nota_adorocinema', 'nota_rottentomatoes']
 
     data = datetime.today() - timedelta(days=1)
     data_hoje = data.strftime('%Y-%m-%d')
